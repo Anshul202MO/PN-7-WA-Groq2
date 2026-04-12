@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Teji Mandi &#8212; Content Generator v8</title>
+<title>Teji Mandi — Content Generator v9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
@@ -53,7 +53,8 @@ main{max-width:1600px;margin:0 auto;padding:20px 16px 60px}
 .badge{background:var(--navy);color:var(--gold);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:16px}
 .ctrls{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .btn{font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:5px}
-.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#c73650}.btn-red:disabled{background:#ccc;cursor:not-allowed}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#c73650}
+.btn-red:disabled{background:#ccc!important;color:#999!important;cursor:not-allowed!important}
 .btn-out{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}.btn-out:hover{background:var(--navy);color:#fff}
 .btn-gold{background:var(--gold);color:var(--navy)}.btn-gold:hover{background:#b8922e}
 .btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#166e3a}
@@ -78,6 +79,7 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 .ref-req{font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
 .ref-code-input{width:100%;border:1.5px solid var(--red);border-radius:5px;padding:4px 6px;font-family:"DM Sans",sans-serif;font-size:11px;background:#fff5f5}
 .ref-code-input:focus{outline:none;border-color:#a01830}
+.ref-warning{font-size:9px;color:var(--red);font-weight:600;margin-top:3px;display:none}
 .sale-flag{display:inline-flex;align-items:center;gap:3px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-bottom:4px}
 .sale-toggle-wrap{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:10px;color:var(--muted)}
 .out-wrap{font-size:11px}
@@ -100,10 +102,11 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 .rlbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:1px 6px;border-radius:8px}
 .rl-none{color:#bbb}.rl-poor{background:#FFE5E5;color:#C0392B}.rl-ok{background:#FFF3D0;color:#8B6914}.rl-good{background:#D4F0E0;color:#1E6B3A}
 .alock{font-size:10px;color:#bbb;font-style:italic}
+/* Learning Panel */
 .learn-panel{background:#fff;border:1.5px solid #90c4f0;border-radius:var(--radius);padding:16px;margin-bottom:12px;display:none}
 .learn-panel h3{font-family:"DM Serif Display",serif;font-size:15px;color:var(--navy);margin-bottom:3px}
 .learn-panel p{font-size:11px;color:var(--muted);margin-bottom:10px}
-.ltabs{display:flex;gap:5px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.ltabs{display:flex;gap:5px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;flex-wrap:wrap}
 .ltab{background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);font-family:"DM Sans",sans-serif}
 .ltab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -114,6 +117,7 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 .litem.li-ok{background:#fffbee;border-color:#f0d080}
 .litem.li-poor{background:#fff5f5;border-color:#f0a0a0}
 .litem.li-unrated{background:#f8f8f8;border-color:#ddd}
+.litem.li-competitor{background:#f5f0ff;border-color:#c0a8f0}
 .ll{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .lt{color:var(--navy);margin-top:1px}
 .ldel{position:absolute;top:4px;right:6px;background:none;border:none;color:#ccc;cursor:pointer;font-size:12px}
@@ -121,8 +125,28 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 .lrating{font-size:9px;font-weight:700;padding:1px 5px;border-radius:6px;margin-bottom:2px;display:inline-block}
 .lr-good{background:#D4F0E0;color:#1E6B3A}.lr-ok{background:#FFF3D0;color:#8B6914}
 .lr-poor{background:#FFE5E5;color:#C0392B}.lr-unrated{background:#EEE;color:#888}
+.lr-competitor{background:#e8e0ff;color:#5a30a0}
 .lcount{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px}
 .lempty{color:#ccc;font-size:11px;font-style:italic;padding:4px 0}
+/* Competitor Add Form */
+.comp-add-form{background:#f8f6ff;border:1.5px dashed #b0a0e0;border-radius:8px;padding:10px;margin-bottom:10px}
+.comp-add-form h5{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.comp-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+.comp-fi{padding:5px 8px;border-radius:5px;border:1.5px solid var(--border);font-family:"DM Sans",sans-serif;font-size:11px;color:var(--text);background:#fff;width:100%}
+.comp-fi:focus{outline:none;border-color:#7a50c0}
+/* Product Profiles Panel */
+.prof-panel{background:#fff;border:1.5px solid var(--gold);border-radius:var(--radius);padding:16px;margin-bottom:12px;display:none}
+.prof-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.prof-panel-head h3{font-family:"DM Serif Display",serif;font-size:15px;color:var(--navy)}
+.prof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:10px;margin-top:10px}
+.prof-card{background:#fffdf5;border:1.5px solid var(--border);border-radius:8px;padding:12px}
+.prof-card h4{font-family:"DM Serif Display",serif;font-size:13px;color:var(--navy);margin-bottom:8px;border-bottom:1px solid #f0e8cc;padding-bottom:5px}
+.prof-field{margin-bottom:6px}
+.prof-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;display:block}
+.prof-input{width:100%;border:1px solid var(--border);border-radius:4px;padding:4px 7px;font-family:"DM Sans",sans-serif;font-size:11px;color:var(--text);background:#fff;resize:vertical;min-height:28px}
+.prof-input:focus{outline:none;border-color:var(--gold);background:#fffbee}
+.prof-saved{font-size:10px;color:var(--green);font-weight:600;display:none;margin-left:8px}
+/* Overlays */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
 .modal{background:#fff;border-radius:12px;padding:26px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal.wide{width:520px}
@@ -140,10 +164,6 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 .prod-code{flex:1.5}
 .prod-code input{width:100%;padding:5px 8px;border-radius:5px;border:1.5px solid var(--red);font-size:11px;background:#fff5f5;font-family:"DM Sans",sans-serif}
 .prod-code input:focus{outline:none;border-color:#a01830}
-.sale-status-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.5px}
-.ssb-scheduled{background:#FFF3D0;color:#8B6914}
-.ssb-active{background:#D4F0E0;color:#1E6B3A}
-.ssb-ended{background:#EEE;color:#888}
 #toast{position:fixed;bottom:22px;right:22px;z-index:999;background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:500;transform:translateY(80px);opacity:0;transition:all .3s;max-width:340px}
 #toast.show{transform:translateY(0);opacity:1}
 .hidden{display:none!important}
@@ -151,13 +171,13 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
 </style>
 </head>
 <body>
-
+ 
 <!-- ADMIN LOGIN MODAL -->
 <div class="overlay hidden" id="adminModal">
   <div class="modal" style="text-align:center">
     <div style="font-size:28px;margin-bottom:6px">&#128274;</div>
     <h3>Admin Access</h3>
-    <p>Enter the admin password to rate content, manage sales, and control the Learning Bank.</p>
+    <p>Enter the admin password to rate content, manage sales, configure product profiles and control the Learning Bank.</p>
     <label class="mlbl">Password</label>
     <input class="minput" type="password" id="adminPwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitAdminLogin()"/>
     <div class="merr" id="adminErr"></div>
@@ -167,13 +187,13 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
     </div>
   </div>
 </div>
-
+ 
 <!-- SALE MANAGEMENT MODAL -->
 <div class="overlay hidden" id="saleModal">
   <div class="modal wide">
     <div style="font-size:24px;margin-bottom:4px;text-align:center">&#127991;</div>
     <h3>Sale Management</h3>
-    <p>Set up the sale details. Activate it manually on the start date. It auto-deactivates on the end date.</p>
+    <p>Set up sale details. Activate manually on the start date. It auto-deactivates on the end date.</p>
     <label class="mlbl">Sale Name</label>
     <input class="minput" type="text" id="saleNameInput" placeholder="e.g. Diwali Sale 2025"/>
     <label class="mlbl">Sale Description (shown to AI for copy writing)</label>
@@ -193,11 +213,11 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
     </div>
   </div>
 </div>
-
+ 
 <header>
   <div class="logo">
     <div class="logo-mark">T</div>
-    <div><div class="logo-text">Teji Mandi</div><div class="logo-sub">Content Generator</div></div>
+    <div><div class="logo-text">Teji Mandi</div><div class="logo-sub">Content Generator v9</div></div>
   </div>
   <nav>
     <button class="tab-btn active" id="tabPn" onclick="switchTab('pn')">&#128242; Push Notifications</button>
@@ -207,27 +227,27 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
     <button class="hbtn hbtn-admin" id="adminBtn" onclick="handleAdminClick()">&#128274; Admin</button>
   </nav>
 </header>
-
+ 
 <main>
   <div class="banner banner-cors" id="corsBanner">
     <div class="banner-icon">&#9888;&#65039;</div>
     <div><h3>One-time hosting needed</h3>
     <p>Opening from file:// blocks API calls. Deploy to <a href="https://app.netlify.com/drop" target="_blank">Netlify Drop</a> or GitHub Pages for a free permanent team link.</p></div>
   </div>
-
+ 
   <div class="banner banner-key">
     <div class="banner-icon">&#128273;</div>
     <div style="flex:1">
-      <h3>Groq API Key &#8212; free, no credit card</h3>
-      <p>Get your key at <a href="https://console.groq.com/keys" target="_blank"><strong>console.groq.com/keys</strong></a> &#8594; Sign up free &#8594; Create API Key &#8594; paste below.</p>
+      <h3>Anthropic API Key &mdash; Claude Sonnet powers content generation</h3>
+      <p>Get your key at <a href="https://console.anthropic.com/keys" target="_blank"><strong>console.anthropic.com/keys</strong></a> &rarr; Create API Key &rarr; paste below. Keys start with <code>sk-ant-</code></p>
       <div class="row">
-        <input class="fi" type="password" id="apiKeyInput" placeholder="gsk_..."/>
+        <input class="fi" type="password" id="apiKeyInput" placeholder="sk-ant-..."/>
         <button class="btn btn-gold btn-sm" onclick="saveKey()">Save Key</button>
         <span class="api-saved" id="apiSaved">&#10003; Saved</span>
       </div>
     </div>
   </div>
-
+ 
   <div class="banner banner-sale" id="saleBanner">
     <div class="banner-icon">&#127991;</div>
     <div style="flex:1">
@@ -236,40 +256,65 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
     </div>
     <div id="saleBannerMeta" style="font-size:10px;color:var(--muted);text-align:right;flex-shrink:0"></div>
   </div>
-
+ 
+  <!-- ADMIN PANEL -->
   <div class="banner banner-admin hidden" id="adminPanel">
     <div class="banner-icon">&#128737;&#65039;</div>
     <div style="flex:1">
       <h3>Admin Mode Active</h3>
-      <p>Rate approved content, manage the active sale, and persist the Learning Bank across sessions.</p>
+      <p>Rate approved content, manage sales, configure product profiles, and persist the Learning Bank.</p>
       <div class="row" style="margin-top:6px;flex-wrap:wrap">
-        <label class="btn btn-out btn-sm" style="cursor:pointer">&#128194; Load Learning Bank<input type="file" id="lbFileInput" accept=".json" style="display:none" onchange="loadLearnBank(event)"/></label>
-        <button class="btn btn-navy btn-sm" onclick="saveLearnBank()">&#128190; Save Learning Bank</button>
+        <label class="btn btn-out btn-sm" style="cursor:pointer">&#128194; Load Bank<input type="file" id="lbFileInput" accept=".json" style="display:none" onchange="loadLearnBank(event)"/></label>
+        <button class="btn btn-navy btn-sm" onclick="saveLearnBank()">&#128190; Save Bank</button>
+        <button class="btn btn-sm" style="background:#fff3e0;color:#8B5E00;border:1px solid #d4a800;cursor:pointer" onclick="toggleProfPanel()">&#9881;&#65039; Product Profiles</button>
+        <label class="btn btn-sm" style="background:#e8f0ff;color:#2E4A7A;border:1px solid #90a8f0;cursor:pointer">
+          &#128229; Import Rated Excel<input type="file" id="ratedExcelInput" accept=".xlsx,.xls" style="display:none" onchange="importRatedExcel(event)"/>
+        </label>
+        <button class="btn btn-sm" style="background:#e8fff0;color:#1E6B3A;border:1px solid #80c4a0;cursor:pointer" onclick="downloadContentTemplate()">&#128203; Content Template</button>
+        <label class="btn btn-sm" style="background:#e8fff0;color:#1E6B3A;border:1px solid #80c4a0;cursor:pointer">
+          &#128228; Import Content Sheet<input type="file" id="contentSheetInput" accept=".xlsx,.xls" style="display:none" onchange="importContentSheet(event)"/>
+        </label>
         <button class="btn btn-sm" style="background:#FFE5E5;color:#C0392B;border:none" onclick="clearLearnBank()">&#128465; Clear All</button>
-        <button class="btn btn-sm" style="background:#eee;color:#666;border:none;margin-left:auto" onclick="adminLogout()">Logout Admin</button>
+        <button class="btn btn-sm" style="background:#eee;color:#666;border:none;margin-left:auto" onclick="adminLogout()">Logout</button>
       </div>
     </div>
   </div>
-
+ 
+  <!-- PRODUCT PROFILES PANEL -->
+  <div class="prof-panel" id="profPanel">
+    <div class="prof-panel-head">
+      <h3>&#9881;&#65039; Product Profiles</h3>
+      <span style="font-size:10px;color:var(--muted)">Saved inside Learning Bank JSON &bull; Injected into every AI prompt when product is detected</span>
+    </div>
+    <p style="font-size:11px;color:var(--muted)">Fill in as much as you know. Even partial info dramatically improves AI output quality. The AI will auto-match the right profile from Segment and Campaign fields.</p>
+    <div class="prof-grid" id="profGrid"></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-gold btn-sm" onclick="saveProfilesConfirm()">&#10003; Profiles Saved to Memory</button>
+      <span class="prof-saved" id="profSavedMsg">&#10003; Profiles will be included in next Save Bank</span>
+    </div>
+  </div>
+ 
+  <!-- LEARNING PANEL -->
   <div class="learn-panel" id="learnPanel">
     <h3>&#129504; Learning Bank</h3>
-    <p>Admin-rated approved content feeds future AI generations. General, Referral and Sale learnings are kept separate and only applied to matching content.</p>
+    <p>Admin-rated approved content, competitor examples, and imported content sheets all feed future AI generation. Each category is kept separate and applied to matching content only.</p>
     <div class="ltabs">
       <button class="ltab active" onclick="switchLearnTab('general')">General <span id="lc-general" class="lcount">0</span></button>
       <button class="ltab" onclick="switchLearnTab('referral')">Referral <span id="lc-referral" class="lcount">0</span></button>
       <button class="ltab" onclick="switchLearnTab('sale')">Sale <span id="lc-sale" class="lcount">0</span></button>
+      <button class="ltab" onclick="switchLearnTab('competitor')">&#127937; Competitor <span id="lc-competitor" class="lcount">0</span></button>
     </div>
     <div id="learnTabContent"></div>
   </div>
-
+ 
   <label class="upload-zone" for="fi" style="display:block;cursor:pointer">
     <input type="file" id="fi" accept=".xlsx,.xls" onchange="loadFile(event)" style="display:none"/>
     <div style="font-size:22px;margin-bottom:4px">&#128194;</div>
     <h3 id="uploadLabel">Click to upload your Teji Mandi Excel file</h3>
-    <p>Both PN and WA sheets load automatically &#183; Or add rows manually below</p>
+    <p>Both PN and WA sheets load automatically &bull; Or add rows manually below</p>
   </label>
   <div class="prog-wrap" id="progWrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
-
+ 
   <div id="panel-pn">
     <div class="sec-head"><h2>Push Notifications</h2><span class="badge">PN</span></div>
     <div class="ctrls">
@@ -299,7 +344,7 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
     </table></div>
     <p class="hidden" id="empty-pn" style="text-align:center;padding:30px;color:var(--muted)">Upload your Excel or click &#8220;+ Add Row&#8221; to begin.</p>
   </div>
-
+ 
   <div id="panel-wa" class="hidden">
     <div class="sec-head"><h2>WhatsApp Messages</h2><span class="badge">WA</span></div>
     <div class="ctrls">
@@ -330,23 +375,18 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
   </div>
 </main>
 <div id="toast"></div>
-
+ 
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────────
 var ADMIN_PASS = 'HipaKids@321';
-
+ 
 var PRODUCTS = ['Flagship','Xpress','Multiplier','F&O Strategies'];
-
+ 
 var TONES = [
-  'FOMO',
-  'Negative Hook',
-  'Inspirational',
-  'Urgency / Deadline-driven',
-  'Social Proof / Authority',
-  'Curiosity / Intrigue',
-  'Reassurance / Trust-building'
+  'FOMO','Negative Hook','Inspirational','Urgency / Deadline-driven',
+  'Social Proof / Authority','Curiosity / Intrigue','Reassurance / Trust-building'
 ];
-
+ 
 var TONE_INSTRUCTIONS = {
   'FOMO': 'Create fear of missing out — emphasise what the user is losing by not acting. Use phrases that highlight opportunity cost.',
   'Negative Hook': 'Start with a challenge, pain point or failure state the user might relate to, then pivot to the solution.',
@@ -356,22 +396,35 @@ var TONE_INSTRUCTIONS = {
   'Curiosity / Intrigue': 'Open a loop the user must close. Use a surprising stat, a question, or a reveal that makes them want to know more.',
   'Reassurance / Trust-building': 'Reduce anxiety and doubt. Speak to hesitation, simplify the decision, and make the user feel safe acting.'
 };
-
+ 
+var LEARN_TABS = ['general','referral','sale','competitor'];
+ 
 var BRAND = 'Brand: Teji Mandi — SEBI-registered research-based investing & trading platform in India.\nSolutions: (1) Model stock portfolios, (2) Trade calls with entry/exit/stop-loss, (3) Tested F&O strategies.\nAnalysts monitor markets continuously and rebalance portfolios at zero cost.';
-
+ 
 var PN_BASE = 'EXAMPLE 1\nSegment: New User | Campaign: Flagship non-subscriber\nHeadline: +33.55% Returns. Dont Miss Out\nBody: Get expert-curated stocks, weekly updates & timely rebalances, built for high-growth opportunities.\nCTA: Explore Flagship\n\nEXAMPLE 2\nSegment: Sale | Campaign: Xpress non-subscriber\nHeadline: Dont just watch the market. Act on it\nBody: Get timely trade ideas backed by research and clear strategy.\nCTA: Explore Xpress\n\nEXAMPLE 3\nSegment: Renewal | Campaign: Multiplier expiring\nHeadline: Multiplier Access Expiring Shortly\nBody: Continue tracking emerging opportunities with uninterrupted research access.\nCTA: Renew Access\n\nEXAMPLE 4\nSegment: New to trading\nHeadline: Still Thinking About Investing?\nBody: Start with structured insights and a clear approach - no confusion, just direction.\nCTA: Explore Now\n\nEXAMPLE 5\nSegment: Subscribed but not invested\nHeadline: Access Unlocked. Investment Pending\nBody: Multiplier opportunities are live. Review the portfolio and decide your next move.\nCTA: Checkout Multiplier Now!';
-
+ 
 var WA_STYLE = 'WhatsApp messages for Teji Mandi:\n- Open with a conversational hook or bold claim from provided data\n- Build with performance context or missed opportunity angle\n- Warm but direct - like a smart friend giving a tip\n- End with a specific CTA on its own line\n- Use natural line breaks after hook, after main line, before CTA\n- Image Copy: max 8 words, punchy, readable as overlay text on a visual';
-
+ 
 var RATING_LABELS = {0:'',1:'Poor',2:'Poor',3:'Okay',4:'Good',5:'Good'};
 var RATING_CLASSES = {0:'rl-none',1:'rl-poor',2:'rl-poor',3:'rl-ok',4:'rl-good',5:'rl-good'};
-
+ 
 // ── STATE ─────────────────────────────────────────────────────
 var pnRows = [], waRows = [], apiKey = '', isAdmin = false;
 var currentLearnTab = 'general';
-var learnBank = {general:{pn:[],wa:[]}, referral:{pn:[],wa:[]}, sale:{pn:[],wa:[]}};
-var activeSale = null; // {name, desc, startDate, endDate, status, products:[{name,code}]}
-
+var learnBank = {
+  general:{pn:[],wa:[]},
+  referral:{pn:[],wa:[]},
+  sale:{pn:[],wa:[]},
+  competitor:{pn:[],wa:[]}
+};
+var activeSale = null;
+var productProfiles = {
+  'Flagship':      {tagline:'',features:'',audience:'',proofPoints:'',price:'',toneNotes:''},
+  'Xpress':        {tagline:'',features:'',audience:'',proofPoints:'',price:'',toneNotes:''},
+  'Multiplier':    {tagline:'',features:'',audience:'',proofPoints:'',price:'',toneNotes:''},
+  'F&O Strategies':{tagline:'',features:'',audience:'',proofPoints:'',price:'',toneNotes:''}
+};
+ 
 // ── ADMIN ─────────────────────────────────────────────────────
 function handleAdminClick(){
   if(isAdmin) adminLogout();
@@ -399,19 +452,24 @@ function adminLogout(){
   document.getElementById('adminBtn').classList.remove('active');
   document.getElementById('adminBtn').innerHTML = '\uD83D\uDD10 Admin';
   document.getElementById('adminPanel').classList.add('hidden');
+  document.getElementById('profPanel').style.display = 'none';
   refreshAllStarCells('pn'); refreshAllStarCells('wa');
   toast('Logged out of admin mode');
 }
-function closeModal(id){ document.getElementById(id).classList.add('hidden'); document.getElementById('adminErr').textContent=''; }
-
+function closeModal(id){
+  document.getElementById(id).classList.add('hidden');
+  var errEl = document.getElementById('adminErr');
+  if(errEl) errEl.textContent='';
+}
+ 
 // ── API KEY ───────────────────────────────────────────────────
 function saveKey(){
   apiKey = document.getElementById('apiKeyInput').value.trim();
-  if(apiKey.indexOf('gsk_') !== 0){ toast('Please enter a valid Groq key (starts with gsk_)', true); return; }
+  if(apiKey.indexOf('sk-ant-') !== 0){ toast('Please enter a valid Anthropic key (starts with sk-ant-)', true); return; }
   document.getElementById('apiSaved').style.display = 'inline';
-  toast('Groq key saved');
+  toast('Anthropic API key saved');
 }
-
+ 
 // ── TAB ───────────────────────────────────────────────────────
 function switchTab(tab){
   document.getElementById('panel-pn').classList.toggle('hidden', tab !== 'pn');
@@ -419,19 +477,90 @@ function switchTab(tab){
   document.getElementById('tabPn').classList.toggle('active', tab === 'pn');
   document.getElementById('tabWa').classList.toggle('active', tab === 'wa');
 }
-
+ 
+// ── PRODUCT PROFILES ──────────────────────────────────────────
+function toggleProfPanel(){
+  if(!isAdmin){ toast('Admin login required.', true); return; }
+  var panel = document.getElementById('profPanel');
+  var visible = panel.style.display === 'block';
+  panel.style.display = visible ? 'none' : 'block';
+  if(!visible) renderProductProfiles();
+}
+ 
+function renderProductProfiles(){
+  var grid = document.getElementById('profGrid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  PRODUCTS.forEach(function(prod){
+    var prof = productProfiles[prod] || {};
+    var card = document.createElement('div'); card.className = 'prof-card';
+    var h4 = document.createElement('h4'); h4.textContent = prod;
+    card.appendChild(h4);
+    var fields = [
+      ['tagline',     'Tagline / Positioning',         'e.g. Expert-curated portfolios for long-term wealth'],
+      ['features',    'Key Features',                  'e.g. 3 model portfolios, zero-cost rebalancing, weekly updates'],
+      ['audience',    'Target Audience',               'e.g. Salaried professionals, 28-45, new to equity investing'],
+      ['proofPoints', 'Proof Points / Returns Data',   'e.g. +33.5% since inception, 12,000+ active subscribers'],
+      ['price',       'Price / Current Offer',         'e.g. ₹4,999/year'],
+      ['toneNotes',   'Tone Notes for this Product',   'e.g. Aspirational but grounded, not aggressive']
+    ];
+    fields.forEach(function(f){
+      var wrap = document.createElement('div'); wrap.className = 'prof-field';
+      var lbl = document.createElement('label'); lbl.className = 'prof-label'; lbl.textContent = f[1];
+      var ta = document.createElement('textarea'); ta.className = 'prof-input'; ta.rows = 2;
+      ta.placeholder = f[2]; ta.value = prof[f[0]] || '';
+      ta.addEventListener('change', (function(p,field){ return function(){ updateProductProfile(p, field, this.value); }; })(prod, f[0]));
+      wrap.appendChild(lbl); wrap.appendChild(ta);
+      card.appendChild(wrap);
+    });
+    grid.appendChild(card);
+  });
+}
+ 
+function updateProductProfile(prod, field, value){
+  if(!productProfiles[prod]) productProfiles[prod] = {};
+  productProfiles[prod][field] = value;
+}
+ 
+function saveProfilesConfirm(){
+  document.getElementById('profSavedMsg').style.display = 'inline';
+  setTimeout(function(){ document.getElementById('profSavedMsg').style.display = 'none'; }, 3000);
+  toast('Profiles stored — they will be saved with next Save Bank');
+}
+ 
+function getProductContext(segment, campaign){
+  var text = ((segment||'') + ' ' + (campaign||'')).toLowerCase();
+  var matched = null;
+  var sorted = PRODUCTS.slice().sort(function(a,b){ return b.length - a.length; });
+  sorted.forEach(function(p){
+    if(!matched && text.indexOf(p.toLowerCase()) >= 0) matched = p;
+  });
+  if(!matched) return '';
+  var prof = productProfiles[matched];
+  if(!prof) return '';
+  var has = prof.tagline || prof.features || prof.audience || prof.proofPoints || prof.price || prof.toneNotes;
+  if(!has) return '';
+  var out = '\n\nPRODUCT PROFILE (' + matched + '):\n';
+  if(prof.tagline)     out += 'Positioning: ' + prof.tagline + '\n';
+  if(prof.features)    out += 'Key Features: ' + prof.features + '\n';
+  if(prof.audience)    out += 'Target Audience: ' + prof.audience + '\n';
+  if(prof.proofPoints) out += 'Proof Points: ' + prof.proofPoints + '\n';
+  if(prof.price)       out += 'Price/Offer: ' + prof.price + '\n';
+  if(prof.toneNotes)   out += 'Additional Tone Notes: ' + prof.toneNotes + '\n';
+  return out;
+}
+ 
 // ── SALE MANAGEMENT ───────────────────────────────────────────
 function openSaleModal(){
   if(!isAdmin){ toast('Admin login required to manage sales.', true); return; }
-  // populate fields from activeSale if exists
-  document.getElementById('saleNameInput').value = activeSale ? activeSale.name : '';
-  document.getElementById('saleDescInput').value = activeSale ? activeSale.desc : '';
+  document.getElementById('saleNameInput').value  = activeSale ? activeSale.name : '';
+  document.getElementById('saleDescInput').value  = activeSale ? activeSale.desc : '';
   document.getElementById('saleStartInput').value = activeSale ? activeSale.startDate : '';
-  document.getElementById('saleEndInput').value = activeSale ? activeSale.endDate : '';
+  document.getElementById('saleEndInput').value   = activeSale ? activeSale.endDate : '';
   renderProdRows();
   document.getElementById('saleModal').classList.remove('hidden');
 }
-
+ 
 function renderProdRows(){
   var container = document.getElementById('prodRows');
   container.innerHTML = '';
@@ -439,31 +568,26 @@ function renderProdRows(){
     var existing = activeSale ? activeSale.products.find(function(p){return p.name===prod;}) : null;
     var checked = !!existing;
     var code = existing ? existing.code : '';
-    var row = document.createElement('div');
-    row.className = 'prod-row';
-    row.id = 'prod-row-' + prod.replace(/[^a-z]/gi,'');
-    // checkbox
+    var row = document.createElement('div'); row.className = 'prod-row';
     var chk = document.createElement('input');
-    chk.type = 'checkbox'; chk.className = 'prod-chk'; chk.id = 'chk-' + prod;
+    chk.type = 'checkbox'; chk.className = 'prod-chk'; chk.id = 'chk-'+prod;
     chk.checked = checked;
     chk.addEventListener('change', (function(p){ return function(){ toggleProdCode(p); }; })(prod));
-    // label
     var lbl = document.createElement('label');
-    lbl.className = 'prod-name'; lbl.htmlFor = 'chk-' + prod; lbl.textContent = prod;
-    // code wrap
+    lbl.className = 'prod-name'; lbl.htmlFor = 'chk-'+prod; lbl.textContent = prod;
     var codeWrap = document.createElement('div');
-    codeWrap.className = 'prod-code'; codeWrap.id = 'code-wrap-' + prod;
+    codeWrap.className = 'prod-code'; codeWrap.id = 'code-wrap-'+prod;
     codeWrap.style.opacity = checked ? '1' : '.3';
     codeWrap.style.pointerEvents = checked ? 'auto' : 'none';
     var codeInp = document.createElement('input');
     codeInp.type = 'text'; codeInp.placeholder = 'Discount code (required)';
-    codeInp.value = code; codeInp.id = 'code-' + prod;
+    codeInp.value = code; codeInp.id = 'code-'+prod;
     codeWrap.appendChild(codeInp);
     row.appendChild(chk); row.appendChild(lbl); row.appendChild(codeWrap);
     container.appendChild(row);
   });
 }
-
+ 
 function toggleProdCode(prod){
   var checked = document.getElementById('chk-'+prod).checked;
   var wrap = document.getElementById('code-wrap-'+prod);
@@ -471,226 +595,280 @@ function toggleProdCode(prod){
   wrap.style.pointerEvents = checked ? 'auto' : 'none';
   if(!checked) document.getElementById('code-'+prod).value = '';
 }
-
+ 
 function saveSale(status){
-  var name = document.getElementById('saleNameInput').value.trim();
-  var desc = document.getElementById('saleDescInput').value.trim();
+  var name  = document.getElementById('saleNameInput').value.trim();
+  var desc  = document.getElementById('saleDescInput').value.trim();
   var start = document.getElementById('saleStartInput').value;
-  var end = document.getElementById('saleEndInput').value;
-  if(!name || !desc || !start || !end){ document.getElementById('saleErr').textContent = 'Please fill in all sale details.'; return; }
-  if(end < start){ document.getElementById('saleErr').textContent = 'End date must be after start date.'; return; }
-  var products = [];
-  var missing = [];
+  var end   = document.getElementById('saleEndInput').value;
+  if(!name||!desc||!start||!end){ document.getElementById('saleErr').textContent='Please fill in all sale details.'; return; }
+  if(end < start){ document.getElementById('saleErr').textContent='End date must be after start date.'; return; }
+  var products = []; var missing = [];
   PRODUCTS.forEach(function(prod){
-    var checked = document.getElementById('chk-'+prod).checked;
-    if(checked){
+    if(document.getElementById('chk-'+prod).checked){
       var code = document.getElementById('code-'+prod).value.trim();
-      if(!code){ missing.push(prod); }
-      else { products.push({name:prod, code:code}); }
+      if(!code) missing.push(prod); else products.push({name:prod,code:code});
     }
   });
-  if(missing.length){ document.getElementById('saleErr').textContent = 'Missing code for: ' + missing.join(', '); return; }
-  if(products.length === 0){ document.getElementById('saleErr').textContent = 'Select at least one product for the sale.'; return; }
-  activeSale = {name:name, desc:desc, startDate:start, endDate:end, status:status, products:products};
-  checkSaleAutoExpiry();
-  closeModal('saleModal');
+  if(missing.length){ document.getElementById('saleErr').textContent='Missing code for: '+missing.join(', '); return; }
+  if(!products.length){ document.getElementById('saleErr').textContent='Select at least one product.'; return; }
+  activeSale = {name:name,desc:desc,startDate:start,endDate:end,status:status,products:products};
+  checkSaleAutoExpiry(); closeModal('saleModal');
   document.getElementById('saleErr').textContent = '';
-  updateSaleUI();
-  renderTable('pn'); renderTable('wa');
-  toast('Sale ' + (status==='active'?'activated':'scheduled') + ': ' + name);
+  updateSaleUI(); renderTable('pn'); renderTable('wa');
+  toast('Sale '+(status==='active'?'activated':'scheduled')+': '+name);
 }
-
+ 
 function deactivateSale(){
-  activeSale = null;
-  closeModal('saleModal');
-  updateSaleUI();
-  renderTable('pn'); renderTable('wa');
+  activeSale = null; closeModal('saleModal');
+  updateSaleUI(); renderTable('pn'); renderTable('wa');
   toast('Sale deactivated');
 }
-
+ 
 function checkSaleAutoExpiry(){
   if(!activeSale) return;
   var today = new Date().toISOString().slice(0,10);
-  if(activeSale.status === 'active' && today > activeSale.endDate){
+  if(activeSale.status==='active' && today > activeSale.endDate){
     activeSale.status = 'ended';
-    toast('Sale "' + activeSale.name + '" has ended and been deactivated.');
+    toast('Sale "'+activeSale.name+'" has ended.');
   }
 }
-
+ 
 function updateSaleUI(){
   checkSaleAutoExpiry();
-  var badge = document.getElementById('saleStatusBadge');
+  var badge  = document.getElementById('saleStatusBadge');
   var banner = document.getElementById('saleBanner');
-  if(!activeSale || activeSale.status === 'ended'){
-    badge.textContent = '';
-    banner.style.display = 'none';
-    return;
-  }
-  if(activeSale.status === 'scheduled'){
-    badge.textContent = '(Scheduled)';
-    badge.style.background = 'transparent';
-    banner.style.display = 'none';
-    return;
-  }
-  // active
+  if(!activeSale || activeSale.status==='ended'){ badge.textContent=''; banner.style.display='none'; return; }
+  if(activeSale.status==='scheduled'){ badge.textContent='(Scheduled)'; banner.style.display='none'; return; }
   badge.textContent = 'LIVE';
   banner.style.display = 'flex';
-  document.getElementById('saleBannerTitle').textContent = '\uD83C\uDFF7\uFE0F ' + activeSale.name + ' is LIVE';
-  document.getElementById('saleBannerDesc').textContent = activeSale.desc + ' | Products: ' + activeSale.products.map(function(p){return p.name+' ('+p.code+')';}).join(', ');
-  document.getElementById('saleBannerMeta').textContent = 'Valid: ' + activeSale.startDate + ' to ' + activeSale.endDate;
+  document.getElementById('saleBannerTitle').textContent = '\uD83C\uDFF7\uFE0F '+activeSale.name+' is LIVE';
+  document.getElementById('saleBannerDesc').textContent  = activeSale.desc+' | Products: '+activeSale.products.map(function(p){return p.name+' ('+p.code+')';}).join(', ');
+  document.getElementById('saleBannerMeta').textContent  = 'Valid: '+activeSale.startDate+' to '+activeSale.endDate;
 }
-
+ 
 function getSaleCodeForSegment(segment){
-  if(!activeSale || activeSale.status !== 'active') return null;
-  // Match segment text to product names
-  var seg = segment.toLowerCase();
+  if(!activeSale||activeSale.status!=='active') return null;
+  var seg = (segment||'').toLowerCase();
   var matched = null;
-  activeSale.products.forEach(function(p){
-    if(seg.indexOf(p.name.toLowerCase()) >= 0) matched = p;
-  });
-  return matched; // {name, code} or null
+  activeSale.products.forEach(function(p){ if(seg.indexOf(p.name.toLowerCase())>=0) matched=p; });
+  return matched;
 }
-
+ 
 // ── LEARNING PANEL ────────────────────────────────────────────
 function toggleLearnPanel(){
   var p = document.getElementById('learnPanel');
-  p.style.display = (p.style.display === 'block') ? 'none' : 'block';
-  if(p.style.display === 'block') renderLearnTab(currentLearnTab);
+  p.style.display = (p.style.display==='block') ? 'none' : 'block';
+  if(p.style.display==='block') renderLearnTab(currentLearnTab);
 }
-
+ 
 function switchLearnTab(tab){
   currentLearnTab = tab;
   document.querySelectorAll('.ltab').forEach(function(b,i){
-    b.classList.toggle('active', ['general','referral','sale'][i] === tab);
+    b.classList.toggle('active', LEARN_TABS[i]===tab);
   });
   renderLearnTab(tab);
 }
-
+ 
 function renderLearnTab(tab){
   var bank = learnBank[tab];
   var content = document.getElementById('learnTabContent');
-  content.innerHTML = '<div class="lgrid">' +
+  var html = '';
+ 
+  // Competitor tab: show admin add-form at top
+  if(tab==='competitor' && isAdmin){
+    html += '<div class="comp-add-form">' +
+      '<h5>+ Add Competitor Example Manually</h5>' +
+      '<div class="comp-row" style="gap:6px;margin-bottom:6px">' +
+        '<select class="sfield" id="compTypeSelect" style="flex:1;min-width:90px">' +
+          '<option value="pn">Push Notification</option><option value="wa">WhatsApp</option>' +
+        '</select>' +
+        '<input class="comp-fi" id="compSource" placeholder="Source App (e.g. Zerodha, Groww)" style="flex:2"/>' +
+      '</div>' +
+      '<div id="compPnFields">' +
+        '<input class="comp-fi" id="compHeadline" placeholder="Headline" style="margin-bottom:4px"/>' +
+        '<input class="comp-fi" id="compBody"     placeholder="Body Copy" style="margin-bottom:4px"/>' +
+        '<input class="comp-fi" id="compCta"      placeholder="CTA" style="margin-bottom:6px"/>' +
+      '</div>' +
+      '<div id="compWaFields" style="display:none">' +
+        '<input class="comp-fi" id="compImageCopy" placeholder="Image Copy" style="margin-bottom:4px"/>' +
+        '<textarea class="comp-fi" id="compMessage" placeholder="Message Body" style="min-height:52px;margin-bottom:6px"></textarea>' +
+      '</div>' +
+      '<button class="btn btn-navy btn-sm" onclick="addCompetitorEntry()">+ Add Entry</button>' +
+      '</div>';
+  }
+ 
+  html += '<div class="lgrid">' +
     '<div class="lsec"><h4>Push Notifications <span id="lc-pn-'+tab+'" class="lcount">'+bank.pn.length+'</span></h4>' +
     '<ul class="llist" id="ll-pn-'+tab+'"></ul></div>' +
     '<div class="lsec"><h4>WhatsApp Messages <span id="lc-wa-'+tab+'" class="lcount">'+bank.wa.length+'</span></h4>' +
     '<ul class="llist" id="ll-wa-'+tab+'"></ul></div>' +
     '</div>';
-  renderLearnList(tab, 'pn');
-  renderLearnList(tab, 'wa');
+ 
+  content.innerHTML = html;
+ 
+  if(tab==='competitor' && isAdmin){
+    var typeSelect = document.getElementById('compTypeSelect');
+    if(typeSelect){
+      typeSelect.addEventListener('change', function(){
+        document.getElementById('compPnFields').style.display = this.value==='wa'?'none':'block';
+        document.getElementById('compWaFields').style.display = this.value==='wa'?'block':'none';
+      });
+    }
+  }
+ 
+  renderLearnList(tab,'pn');
+  renderLearnList(tab,'wa');
 }
-
+ 
 function renderLearnList(tab, type){
   var bank = learnBank[tab][type];
   var list = document.getElementById('ll-'+type+'-'+tab);
   if(!list) return;
   list.innerHTML = '';
-  if(bank.length === 0){
-    var empty = document.createElement('li'); empty.className = 'lempty'; empty.textContent = 'No entries yet.';
+  if(!bank.length){
+    var empty = document.createElement('li'); empty.className='lempty';
+    empty.textContent = tab==='competitor' ? 'No competitor examples yet.' : 'No entries yet.';
     list.appendChild(empty); return;
   }
-  bank.forEach(function(item, i){
-    var tier = item.tier || 'unrated';
-    var li = document.createElement('li'); li.className = 'litem li-' + tier;
-    // delete button (admin only)
+  bank.forEach(function(item,i){
+    var isComp = tab==='competitor';
+    var tier = isComp ? 'competitor' : (item.tier||'unrated');
+    var li = document.createElement('li'); li.className='litem li-'+tier;
+ 
     if(isAdmin){
-      var del = document.createElement('button'); del.className = 'ldel'; del.textContent = 'x';
-      del.addEventListener('click', (function(t,tp,idx){ return function(){ removeLearn(t,tp,idx); }; })(tab,type,i));
+      var del = document.createElement('button'); del.className='ldel'; del.textContent='x';
+      del.addEventListener('click',(function(t,tp,idx){ return function(){ removeLearn(t,tp,idx); }; })(tab,type,i));
       li.appendChild(del);
     }
-    // rating badge
-    var rating = document.createElement('span'); rating.className = 'lrating lr-' + tier;
-    var starStr = item.rating ? ('★'.repeat(item.rating) + '☆'.repeat(5-item.rating)) : 'No rating';
-    rating.textContent = starStr + ' ' + ucfirst(tier);
-    li.appendChild(rating);
-    // content
-    var fields = type === 'pn'
-      ? [['Headline', item.headline], ['Body', item.body], ['CTA', item.cta]]
-      : [['Image Copy', item.imageCopy], ['Message', item.message]];
+ 
+    if(isComp){
+      var src = document.createElement('div');
+      src.style.cssText = 'font-size:9px;font-weight:700;color:#5a30a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px';
+      src.textContent = '\uD83D\uDCF1 '+( item.source||'Competitor');
+      li.appendChild(src);
+    } else {
+      var rating = document.createElement('span');
+      rating.className = 'lrating lr-'+(item.rating?getRatingTier(item.rating):'unrated');
+      rating.textContent = item.rating ? ('★'.repeat(item.rating)+'☆'.repeat(5-item.rating)+' '+ucfirst(tier)) : 'No rating';
+      li.appendChild(rating);
+    }
+ 
+    var fields = type==='pn'
+      ? [['Headline',item.headline],['Body',item.body],['CTA',item.cta]]
+      : [['Image Copy',item.imageCopy],['Message',item.message]];
     fields.forEach(function(pair){
-      var lbl = document.createElement('div'); lbl.className = 'll'; lbl.textContent = pair[0];
-      var val = document.createElement('div'); val.className = 'lt'; val.textContent = pair[1] || '';
+      if(!pair[1]) return;
+      var lbl = document.createElement('div'); lbl.className='ll'; lbl.textContent=pair[0];
+      var val = document.createElement('div'); val.className='lt'; val.textContent=pair[1];
       li.appendChild(lbl); li.appendChild(val);
     });
-    // meta
-    var meta = document.createElement('div');
-    meta.style.cssText = 'font-size:9px;color:#bbb;margin-top:2px';
-    meta.textContent = (item.campaign||'') + (item.tone ? ' | ' + item.tone : '');
-    li.appendChild(meta);
+ 
+    if(!isComp){
+      var meta = document.createElement('div');
+      meta.style.cssText='font-size:9px;color:#bbb;margin-top:2px';
+      meta.textContent=(item.campaign||'')+(item.tone?' | '+item.tone:'');
+      li.appendChild(meta);
+    }
     list.appendChild(li);
   });
 }
-
+ 
+function addCompetitorEntry(){
+  if(!isAdmin){ toast('Admin login required.', true); return; }
+  var typeEl  = document.getElementById('compTypeSelect');
+  var sourceEl= document.getElementById('compSource');
+  var type    = typeEl ? typeEl.value : 'pn';
+  var source  = sourceEl ? sourceEl.value.trim() : '';
+  if(!source){ toast('Please enter the source app name.', true); return; }
+ 
+  var entry = {source:source};
+  if(type==='pn'){
+    var hl  = (document.getElementById('compHeadline')||{value:''}).value.trim();
+    var bod = (document.getElementById('compBody')||{value:''}).value.trim();
+    var cta = (document.getElementById('compCta')||{value:''}).value.trim();
+    if(!hl){ toast('Please enter at least a headline.', true); return; }
+    entry.headline=hl; entry.body=bod; entry.cta=cta;
+    learnBank.competitor.pn.push(entry);
+  } else {
+    var ic  = (document.getElementById('compImageCopy')||{value:''}).value.trim();
+    var msg = (document.getElementById('compMessage')||{value:''}).value.trim();
+    if(!ic&&!msg){ toast('Please enter image copy or message.', true); return; }
+    entry.imageCopy=ic; entry.message=msg;
+    learnBank.competitor.wa.push(entry);
+  }
+  updateLearnCounts();
+  renderLearnTab('competitor');
+  toast('Competitor example added!');
+}
+ 
 function updateLearnCounts(){
-  var total = learnBank.general.pn.length + learnBank.general.wa.length +
-    learnBank.referral.pn.length + learnBank.referral.wa.length +
-    learnBank.sale.pn.length + learnBank.sale.wa.length;
+  var total = 0;
+  LEARN_TABS.forEach(function(t){ total += learnBank[t].pn.length + learnBank[t].wa.length; });
   document.getElementById('learnCount').textContent = total;
-  ['general','referral','sale'].forEach(function(tab){
+  LEARN_TABS.forEach(function(tab){
     var el = document.getElementById('lc-'+tab);
     if(el) el.textContent = learnBank[tab].pn.length + learnBank[tab].wa.length;
   });
 }
-
+ 
 function getRatingTier(r){ return !r||r===0?'unrated':r>=4?'good':r===3?'ok':'poor'; }
 function ucfirst(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
-
+ 
 function approveRow(type, i){
   var rows = type==='pn' ? pnRows : waRows;
   var row = rows[i];
   if(type==='pn' && !row.headline){ toast('Generate content first before approving.', true); return; }
   if(type==='wa' && !row.imageCopy){ toast('Generate content first before approving.', true); return; }
-  if(row.status === 'approved'){ toast('Already approved.', true); return; }
-  // determine which bank
-  var bankKey = row.isSale ? 'sale' : row.referral === 'Referral' ? 'referral' : 'general';
-  var entry = {campaign:row.campaign, segment:row.segment, tone:row.tone||'', rating:0, tier:'unrated'};
+  if(row.status==='approved'){ toast('Already approved.', true); return; }
+  var bankKey = row.isSale ? 'sale' : row.referral==='Referral' ? 'referral' : 'general';
+  var entry = {campaign:row.campaign,segment:row.segment,tone:row.tone||'',rating:0,tier:'unrated'};
   if(type==='pn'){ entry.headline=row.headline; entry.body=row.body; entry.cta=row.cta; }
   else { entry.imageCopy=row.imageCopy; entry.message=row.message; }
   learnBank[bankKey][type].push(entry);
-  row.status = 'approved';
-  row.learnBank = bankKey;
-  row.learnIdx = learnBank[bankKey][type].length - 1;
+  row.status='approved'; row.learnBank=bankKey; row.learnIdx=learnBank[bankKey][type].length-1;
   document.getElementById('st-'+type+'-'+i).innerHTML = pill('approved');
   refreshStarCell(type, i);
   updateLearnCounts();
   if(document.getElementById('learnPanel').style.display==='block') renderLearnTab(currentLearnTab);
-  toast('Approved &#8594; added to ' + ucfirst(bankKey) + ' Learning Bank');
+  toast('Approved \u2192 added to '+ucfirst(bankKey)+' Learning Bank');
 }
-
+ 
 function setRating(type, bankKey, learnIdx, rating){
-  if(!isAdmin){ toast('Admin login required to rate content.', true); return; }
-  if(!learnBank[bankKey][type][learnIdx]) return;
+  if(!isAdmin){ toast('Admin login required.', true); return; }
+  if(!learnBank[bankKey]||!learnBank[bankKey][type]||!learnBank[bankKey][type][learnIdx]) return;
   learnBank[bankKey][type][learnIdx].rating = rating;
-  learnBank[bankKey][type][learnIdx].tier = getRatingTier(rating);
+  learnBank[bankKey][type][learnIdx].tier   = getRatingTier(rating);
   if(document.getElementById('learnPanel').style.display==='block') renderLearnTab(currentLearnTab);
   toast('Rating saved');
 }
-
+ 
 function removeLearn(tab, type, i){
   if(!isAdmin){ toast('Admin login required.', true); return; }
-  learnBank[tab][type].splice(i, 1);
+  learnBank[tab][type].splice(i,1);
   updateLearnCounts();
   renderLearnTab(tab);
 }
-
+ 
 function clearLearnBank(){
   if(!isAdmin){ toast('Admin login required.', true); return; }
-  if(!confirm('Clear the entire Learning Bank?')) return;
-  learnBank = {general:{pn:[],wa:[]}, referral:{pn:[],wa:[]}, sale:{pn:[],wa:[]}};
+  if(!confirm('Clear the entire Learning Bank? This cannot be undone.')) return;
+  learnBank = {general:{pn:[],wa:[]},referral:{pn:[],wa:[]},sale:{pn:[],wa:[]},competitor:{pn:[],wa:[]}};
   updateLearnCounts();
   renderLearnTab(currentLearnTab);
   toast('Learning Bank cleared.');
 }
-
+ 
 function saveLearnBank(){
   if(!isAdmin){ toast('Admin login required.', true); return; }
-  var data = JSON.stringify({version:2, savedAt:new Date().toISOString(), learnBank:learnBank, activeSale:activeSale}, null, 2);
-  var blob = new Blob([data], {type:'application/json'});
+  var data = JSON.stringify({version:3,savedAt:new Date().toISOString(),learnBank:learnBank,activeSale:activeSale,productProfiles:productProfiles},null,2);
+  var blob = new Blob([data],{type:'application/json'});
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'TejiMandi_LearningBank_' + new Date().toISOString().slice(0,10) + '.json';
+  a.download = 'TejiMandi_LearningBank_'+new Date().toISOString().slice(0,10)+'.json';
   a.click();
   toast('Learning Bank saved');
 }
-
+ 
 function loadLearnBank(e){
   var file = e.target.files[0]; if(!file) return;
   var reader = new FileReader();
@@ -699,23 +877,147 @@ function loadLearnBank(e){
       var parsed = JSON.parse(ev.target.result);
       if(parsed.learnBank){
         learnBank = parsed.learnBank;
-        if(parsed.activeSale) activeSale = parsed.activeSale;
-        updateLearnCounts();
-        updateSaleUI();
+        if(!learnBank.competitor) learnBank.competitor = {pn:[],wa:[]};
+        if(parsed.activeSale)      activeSale = parsed.activeSale;
+        if(parsed.productProfiles) productProfiles = parsed.productProfiles;
+        updateLearnCounts(); updateSaleUI();
         renderTable('pn'); renderTable('wa');
         if(document.getElementById('learnPanel').style.display==='block') renderLearnTab(currentLearnTab);
         toast('Learning Bank loaded successfully');
-      } else { toast('Invalid file format.', true); }
-    } catch(err){ toast('Could not read file.', true); }
+      } else { toast('Invalid file format.',true); }
+    } catch(err){ toast('Could not read file.',true); }
   };
   reader.readAsText(file);
   e.target.value = '';
 }
-
+ 
+// ── IMPORT RATED EXCEL BACK INTO LEARNING BANK (Fix 3) ───────
+function importRatedExcel(e){
+  if(!isAdmin){ toast('Admin login required.',true); return; }
+  var file = e.target.files[0]; if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var wb = XLSX.read(ev.target.result,{type:'array'});
+    var added = 0;
+    // PN sheet: Segment(0),Campaign(1),Perf(2),Tone(3),Referral(4),RefCode(5),SaleIncluded(6),Status(7),Headline(8),Body(9),CTA(10),Note(11),Stars(12)
+    var pnSheet = wb.Sheets['Push Notifications'];
+    if(pnSheet){
+      var pnData = XLSX.utils.sheet_to_json(pnSheet,{header:1,defval:''});
+      for(var r=1;r<pnData.length;r++){
+        var row=pnData[r];
+        var status=String(row[7]||'').trim().toLowerCase();
+        var rating=parseInt(row[12])||0;
+        if((status==='approved'||status==='done') && rating>=1){
+          var bankKey=String(row[6]||'').toLowerCase()==='yes'?'sale':String(row[4]||'')==='Referral'?'referral':'general';
+          learnBank[bankKey].pn.push({
+            segment:String(row[0]||''),campaign:String(row[1]||''),tone:String(row[3]||''),
+            rating:rating,tier:getRatingTier(rating),
+            headline:String(row[8]||''),body:String(row[9]||''),cta:String(row[10]||'')
+          });
+          added++;
+        }
+      }
+    }
+    // WA sheet: Segment(0),Conversion(1),Campaign(2),Tone(3),Referral(4),RefCode(5),SaleIncluded(6),Status(7),ImageCopy(8),Message(9),Note(10),Stars(11)
+    var waSheet = wb.Sheets['WhatsApp'];
+    if(waSheet){
+      var waData = XLSX.utils.sheet_to_json(waSheet,{header:1,defval:''});
+      for(var r2=1;r2<waData.length;r2++){
+        var row2=waData[r2];
+        var status2=String(row2[7]||'').trim().toLowerCase();
+        var rating2=parseInt(row2[11])||0;
+        if((status2==='approved'||status2==='done') && rating2>=1){
+          var bankKey2=String(row2[6]||'').toLowerCase()==='yes'?'sale':String(row2[4]||'')==='Referral'?'referral':'general';
+          learnBank[bankKey2].wa.push({
+            segment:String(row2[0]||''),campaign:String(row2[2]||''),tone:String(row2[3]||''),
+            rating:rating2,tier:getRatingTier(rating2),
+            imageCopy:String(row2[8]||''),message:String(row2[9]||'')
+          });
+          added++;
+        }
+      }
+    }
+    updateLearnCounts();
+    if(document.getElementById('learnPanel').style.display==='block') renderLearnTab(currentLearnTab);
+    toast('Imported '+added+' rated entries from Excel into Learning Bank');
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value='';
+}
+ 
+// ── CONTENT SHEET TEMPLATE & IMPORT ──────────────────────────
+function downloadContentTemplate(){
+  if(!isAdmin){ toast('Admin login required.',true); return; }
+  var wb = XLSX.utils.book_new();
+  var data = [
+    ['Content Type','Category','Source App','Segment','Campaign Type','Tone','Headline','Body Copy','CTA','Image Copy','Message','Rating (1-5)'],
+    ['','','','','','','','','','','',''],
+    ['--- INSTRUCTIONS ---','','','','','','','','','','',''],
+    ['Content Type: PN or WA','Category: general / referral / sale / competitor','Source App: only fill for competitor rows','Segment: same as in the tool','Campaign Type: same as in the tool','Tone: one of the 7 tones','Headline: PN only','Body Copy: PN only','CTA: PN only','Image Copy: WA only','Message: WA only','1=Poor, 3=Okay, 4-5=Good'],
+    ['','','','','','','','','','','',''],
+    ['--- EXAMPLES ---','','','','','','','','','','',''],
+    ['PN','general','','New User','Flagship non-subscriber','FOMO','Your Example Headline','Your Example Body Copy','Explore Now','','',5],
+    ['WA','sale','','Renewal','Xpress renewal','Urgency / Deadline-driven','','','','Bold Image Text','Your WhatsApp message here',4],
+    ['PN','competitor','Zerodha','','','','Their headline here','Their body here','Their CTA','','',0],
+    ['WA','competitor','Groww','','','','','','','Their image copy','Their WA message body',0],
+  ];
+  var ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [13,12,14,16,18,22,28,38,16,20,42,12].map(function(w){return{wch:w};});
+  XLSX.utils.book_append_sheet(wb, ws, 'Content Learning Sheet');
+  XLSX.writeFile(wb, 'TejiMandi_ContentSheet_Template.xlsx');
+  toast('Template downloaded — fill it in and import back');
+}
+ 
+function importContentSheet(e){
+  if(!isAdmin){ toast('Admin login required.',true); return; }
+  var file = e.target.files[0]; if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var wb = XLSX.read(ev.target.result,{type:'array'});
+    var sheet = wb.Sheets[wb.SheetNames[0]];
+    var data = XLSX.utils.sheet_to_json(sheet,{header:1,defval:''});
+    var added = 0;
+    for(var r=1;r<data.length;r++){
+      var row = data[r];
+      var ct = String(row[0]||'').trim().toUpperCase();
+      if(ct!=='PN' && ct!=='WA') continue;
+      var cat    = String(row[1]||'').trim().toLowerCase();
+      var source = String(row[2]||'').trim();
+      var seg    = String(row[3]||'').trim();
+      var camp   = String(row[4]||'').trim();
+      var tone   = String(row[5]||'').trim();
+      var hl     = String(row[6]||'').trim();
+      var bod    = String(row[7]||'').trim();
+      var cta    = String(row[8]||'').trim();
+      var ic     = String(row[9]||'').trim();
+      var msg    = String(row[10]||'').trim();
+      var rating = parseInt(row[11])||0;
+      var bankKey = ['general','referral','sale','competitor'].indexOf(cat)>=0 ? cat : 'general';
+      var tier = getRatingTier(rating);
+      if(ct==='PN'){
+        if(!hl) continue;
+        var entry = {campaign:camp,segment:seg,tone:tone,rating:rating,tier:tier,headline:hl,body:bod,cta:cta};
+        if(bankKey==='competitor') entry.source=source;
+        learnBank[bankKey].pn.push(entry); added++;
+      } else {
+        if(!ic&&!msg) continue;
+        var entry2 = {campaign:camp,segment:seg,tone:tone,rating:rating,tier:tier,imageCopy:ic,message:msg};
+        if(bankKey==='competitor') entry2.source=source;
+        learnBank[bankKey].wa.push(entry2); added++;
+      }
+    }
+    updateLearnCounts();
+    if(document.getElementById('learnPanel').style.display==='block') renderLearnTab(currentLearnTab);
+    toast('Imported '+added+' entries from Content Sheet into Learning Bank');
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value='';
+}
+ 
 // ── LEARN CONTEXT FOR PROMPTS ─────────────────────────────────
 function getLearnContext(bankKey, type){
   var bank = learnBank[bankKey][type];
-  var good=[], ok=[], poor=[];
+  var good=[],ok=[],poor=[];
   bank.forEach(function(item){
     if(item.tier==='good') good.push(item);
     else if(item.tier==='ok') ok.push(item);
@@ -725,335 +1027,375 @@ function getLearnContext(bankKey, type){
   if(good.length){
     out += '\n\nHIGH PERFORMING APPROVED EXAMPLES (match this style above all else):\n';
     good.forEach(function(item,i){
-      if(type==='pn') out += 'GOOD #'+(i+1)+' | '+item.campaign+(item.tone?' | Tone:'+item.tone:'')+'\nHeadline: '+item.headline+'\nBody: '+item.body+'\nCTA: '+item.cta+'\n';
-      else out += 'GOOD #'+(i+1)+' | '+item.campaign+'\nImage Copy: '+item.imageCopy+'\nMessage: '+item.message+'\n';
+      if(type==='pn') out+='GOOD #'+(i+1)+' | '+(item.campaign||'')+( item.tone?' | Tone:'+item.tone:'')+'\nHeadline: '+item.headline+'\nBody: '+item.body+'\nCTA: '+item.cta+'\n';
+      else out+='GOOD #'+(i+1)+' | '+(item.campaign||'')+'\nImage Copy: '+item.imageCopy+'\nMessage: '+item.message+'\n';
     });
   }
   if(ok.length){
     out += '\nDECENT EXAMPLES (acceptable reference):\n';
     ok.forEach(function(item,i){
-      if(type==='pn') out += 'OKAY #'+(i+1)+' | Headline: '+item.headline+' | Body: '+item.body+'\n';
-      else out += 'OKAY #'+(i+1)+' | Image Copy: '+item.imageCopy+'\n';
+      if(type==='pn') out+='OKAY #'+(i+1)+' | Headline: '+item.headline+' | Body: '+item.body+'\n';
+      else out+='OKAY #'+(i+1)+' | Image Copy: '+item.imageCopy+'\n';
     });
   }
   if(poor.length){
     out += '\nPOOR PERFORMING EXAMPLES (DO NOT replicate these patterns):\n';
     poor.forEach(function(item,i){
-      if(type==='pn') out += 'AVOID #'+(i+1)+' | Headline: '+item.headline+' | Body: '+item.body+'\n';
-      else out += 'AVOID #'+(i+1)+' | Image Copy: '+item.imageCopy+'\n';
+      if(type==='pn') out+='AVOID #'+(i+1)+' | Headline: '+item.headline+' | Body: '+item.body+'\n';
+      else out+='AVOID #'+(i+1)+' | Image Copy: '+item.imageCopy+'\n';
     });
   }
   return out;
 }
-
+ 
+function getCompetitorContext(type){
+  var bank = learnBank.competitor[type];
+  if(!bank||!bank.length) return '';
+  var out = '\n\nCOMPETITOR REFERENCE (style inspiration ONLY — never copy, always adapt creatively for Teji Mandi brand):\n';
+  bank.slice(-6).forEach(function(item){
+    var from = item.source ? 'From '+item.source+': ' : '';
+    if(type==='pn'){
+      out += from+(item.headline?'Headline: "'+item.headline+'"':'')+( item.body?' | Body: "'+item.body+'"':'')+'\n';
+    } else {
+      out += from+(item.imageCopy?'Image: "'+item.imageCopy+'"':'')+( item.message?' | Msg: "'+item.message.substring(0,100)+'..."':'')+'\n';
+    }
+  });
+  return out;
+}
+ 
+function buildContext(row, type){
+  var bankKey = row.isSale ? 'sale' : row.referral==='Referral' ? 'referral' : 'general';
+  var learnCtx      = getLearnContext(bankKey, type);
+  var productCtx    = getProductContext(row.segment, row.campaign);
+  var competitorCtx = getCompetitorContext(type);
+  var toneInstruction = TONE_INSTRUCTIONS[row.tone] || '';
+  var referralCtx = '';
+  if(row.referral==='Referral'){
+    referralCtx = '\nREFERRAL CONTEXT: This is a referral campaign. Include the referral code "'+row.refCode+'" naturally in the copy — make it feel like a benefit being shared between friends, not a promotion.';
+  }
+  var saleCtx = '';
+  if(row.isSale && activeSale && activeSale.status==='active'){
+    var matched = getSaleCodeForSegment(row.segment);
+    saleCtx = '\nSALE CONTEXT: Active sale: "'+activeSale.name+'". '+activeSale.desc+'.';
+    if(matched) saleCtx += ' Discount code for '+matched.name+': '+matched.code+'. Include this code naturally.';
+    saleCtx += ' Valid till '+activeSale.endDate+'.';
+  }
+  return {bankKey:bankKey,learnCtx:learnCtx,productCtx:productCtx,competitorCtx:competitorCtx,toneInstruction:toneInstruction,referralCtx:referralCtx,saleCtx:saleCtx};
+}
+ 
 // ── FILE LOAD ─────────────────────────────────────────────────
 function loadFile(e){
   var file = e.target.files[0]; if(!file) return;
   var reader = new FileReader();
   reader.onload = function(ev){
-    var wb = XLSX.read(ev.target.result, {type:'array'});
+    var wb = XLSX.read(ev.target.result,{type:'array'});
     var pnSheet = wb.Sheets['Push Notifications'];
     if(pnSheet){
-      var data = XLSX.utils.sheet_to_json(pnSheet, {header:1, defval:''});
+      var data = XLSX.utils.sheet_to_json(pnSheet,{header:1,defval:''});
       pnRows = [];
       for(var r=3;r<data.length;r++){
         var row=data[r]; if(!row[0]&&!row[1]) continue;
-        pnRows.push(newRow('pn', {segment:row[0]||'', campaign:row[1]||'', performance:row[2]||'', notes:row[7]||''}));
+        pnRows.push(newRow('pn',{segment:row[0]||'',campaign:row[1]||'',performance:row[2]||'',notes:row[7]||''}));
       }
     }
     var waSheet = wb.Sheets['WhatsApp'];
     if(waSheet){
-      var data2 = XLSX.utils.sheet_to_json(waSheet, {header:1, defval:''});
+      var data2 = XLSX.utils.sheet_to_json(waSheet,{header:1,defval:''});
       waRows = [];
       for(var r2=3;r2<data2.length;r2++){
         var row2=data2[r2]; if(!row2[0]&&!row2[1]) continue;
-        waRows.push(newRow('wa', {segment:row2[0]||'', conversion:row2[1]||'', campaign:row2[2]||'', notes:row2[6]||''}));
+        waRows.push(newRow('wa',{segment:row2[0]||'',conversion:row2[1]||'',campaign:row2[2]||'',notes:row2[6]||''}));
       }
     }
-    document.getElementById('uploadLabel').textContent = 'Loaded: ' + file.name;
+    document.getElementById('uploadLabel').textContent = 'Loaded: '+file.name;
     renderTable('pn'); renderTable('wa');
-    toast('Loaded \u2014 ' + pnRows.length + ' PN rows, ' + waRows.length + ' WA rows');
+    toast('Loaded \u2014 '+pnRows.length+' PN rows, '+waRows.length+' WA rows');
   };
   reader.readAsArrayBuffer(file);
 }
-
+ 
 function newRow(type, overrides){
-  var base = {status:'pending', tone:'FOMO', referral:'Non-Referral', refCode:'', isSale:false,
-    rating:0, learnIdx:-1, learnBank:'general', notes:'',
-    headline:'', body:'', cta:'', imageCopy:'', message:'',
-    segment:'', campaign:'', performance:'', conversion:''};
-  Object.keys(overrides).forEach(function(k){ base[k] = overrides[k]; });
+  var base = {status:'pending',tone:'FOMO',referral:'Non-Referral',refCode:'',isSale:false,
+    rating:0,learnIdx:-1,learnBank:'general',notes:'',
+    headline:'',body:'',cta:'',imageCopy:'',message:'',
+    segment:'',campaign:'',performance:'',conversion:''};
+  Object.keys(overrides).forEach(function(k){ base[k]=overrides[k]; });
   return base;
 }
-
+ 
 function addRow(type){
-  if(type==='pn') pnRows.push(newRow('pn', {}));
-  else waRows.push(newRow('wa', {}));
+  if(type==='pn') pnRows.push(newRow('pn',{}));
+  else waRows.push(newRow('wa',{}));
   renderTable(type);
 }
-
+ 
 // ── RENDER ────────────────────────────────────────────────────
 function renderTable(type){
-  var rows = type==='pn' ? pnRows : waRows;
+  var rows  = type==='pn' ? pnRows : waRows;
   var tbody = document.getElementById('body-'+type);
   var empty = document.getElementById('empty-'+type);
   tbody.innerHTML = '';
-  empty.classList.toggle('hidden', rows.length > 0);
-  for(var i=0;i<rows.length;i++) tbody.appendChild(makeRow(type, rows[i], i));
+  empty.classList.toggle('hidden', rows.length>0);
+  for(var i=0;i<rows.length;i++) tbody.appendChild(makeRow(type,rows[i],i));
 }
-
-// Refresh only the star widget for one row — preserves rating after admin login/logout
+ 
 function refreshStarCell(type, i){
-  var td = document.getElementById('perf-' + type + '-' + i);
+  var td = document.getElementById('perf-'+type+'-'+i);
   if(!td) return;
   var rows = type==='pn' ? pnRows : waRows;
-  td.innerHTML = '';
-  td.appendChild(makeStarWidget(type, i, rows[i]));
+  td.innerHTML=''; td.appendChild(makeStarWidget(type,i,rows[i]));
 }
-
-// Refresh all star cells without re-rendering full table
+ 
 function refreshAllStarCells(type){
   var rows = type==='pn' ? pnRows : waRows;
-  for(var i=0;i<rows.length;i++) refreshStarCell(type, i);
+  for(var i=0;i<rows.length;i++) refreshStarCell(type,i);
 }
-
+ 
 function pill(s){
-  var labels = {pending:'Pending',running:'Generating...',done:'Done',approved:'Approved',error:'Error'};
+  var labels={pending:'Pending',running:'Generating…',done:'Done',approved:'Approved',error:'Error'};
   return '<span class="pill p-'+s+'"><span class="pdot"></span>'+(labels[s]||s)+'</span>';
 }
-
+ 
+// FIX 4: gen button state linked to referral code
+function updateGenBtnState(type, i){
+  var btn = document.getElementById('gen-'+type+'-'+i);
+  if(!btn) return;
+  var rows = type==='pn' ? pnRows : waRows;
+  var row  = rows[i];
+  var blocked = row.referral==='Referral' && !(row.refCode||'').trim();
+  btn.disabled = blocked;
+  btn.title    = blocked ? '\u26A0\uFE0F Enter referral code to enable' : '';
+}
+ 
 function toneSelect(type, i, val){
-  var sel = document.createElement('select'); sel.className = 'sfield';
+  var sel = document.createElement('select'); sel.className='sfield';
   TONES.forEach(function(t){
-    var o = document.createElement('option'); o.value = t; o.textContent = t;
-    if(t === val) o.selected = true;
-    sel.appendChild(o);
+    var o=document.createElement('option'); o.value=t; o.textContent=t;
+    if(t===val) o.selected=true; sel.appendChild(o);
   });
-  sel.addEventListener('change', function(){
-    var rows = type==='pn' ? pnRows : waRows;
-    rows[i].tone = this.value;
+  sel.addEventListener('change',function(){
+    var rows=type==='pn'?pnRows:waRows; rows[i].tone=this.value;
   });
   return sel;
 }
-
+ 
 function referralSelect(type, i, row){
   var wrap = document.createElement('div');
-  var sel = document.createElement('select'); sel.className = 'sfield';
+  var sel  = document.createElement('select'); sel.className='sfield';
   ['Non-Referral','Referral'].forEach(function(v){
-    var o = document.createElement('option'); o.value = v; o.textContent = v;
-    if(v === row.referral) o.selected = true;
-    sel.appendChild(o);
+    var o=document.createElement('option'); o.value=v; o.textContent=v;
+    if(v===row.referral) o.selected=true; sel.appendChild(o);
   });
-  var codeWrap = document.createElement('div'); codeWrap.className = 'ref-code-wrap';
-  codeWrap.style.display = row.referral === 'Referral' ? 'block' : 'none';
-  var codeLbl = document.createElement('div'); codeLbl.className = 'ref-req'; codeLbl.textContent = '* Referral Code (required)';
-  var codeInp = document.createElement('input'); codeInp.className = 'ref-code-input';
-  codeInp.type = 'text'; codeInp.placeholder = 'e.g. FRIEND20';
-  codeInp.value = row.refCode || '';
-  codeInp.addEventListener('change', function(){
-    var rows = type==='pn' ? pnRows : waRows; rows[i].refCode = this.value;
-  });
-  codeWrap.appendChild(codeLbl); codeWrap.appendChild(codeInp);
-  sel.addEventListener('change', function(){
-    var rows = type==='pn' ? pnRows : waRows;
-    rows[i].referral = this.value;
-    codeWrap.style.display = this.value === 'Referral' ? 'block' : 'none';
+  var codeWrap = document.createElement('div'); codeWrap.className='ref-code-wrap';
+  codeWrap.style.display = row.referral==='Referral' ? 'block' : 'none';
+  var codeLbl  = document.createElement('div'); codeLbl.className='ref-req'; codeLbl.textContent='* Referral Code (required)';
+  var codeInp  = document.createElement('input'); codeInp.className='ref-code-input';
+  codeInp.type='text'; codeInp.placeholder='e.g. FRIEND20'; codeInp.value=row.refCode||'';
+  // Inline warning
+  var warn = document.createElement('div'); warn.className='ref-warning';
+  warn.id='ref-warn-'+type+'-'+i;
+  warn.textContent='\u26A0\uFE0F Enter code above to enable Generate';
+  warn.style.display=(row.referral==='Referral'&&!(row.refCode||'').trim())?'block':'none';
+ 
+  function onCodeChange(v){
+    var rows=type==='pn'?pnRows:waRows; rows[i].refCode=v;
+    updateGenBtnState(type,i);
+    warn.style.display=(!v.trim()&&rows[i].referral==='Referral')?'block':'none';
+  }
+  codeInp.addEventListener('input',  function(){ onCodeChange(this.value); });
+  codeInp.addEventListener('change', function(){ onCodeChange(this.value); });
+ 
+  codeWrap.appendChild(codeLbl); codeWrap.appendChild(codeInp); codeWrap.appendChild(warn);
+ 
+  sel.addEventListener('change',function(){
+    var rows=type==='pn'?pnRows:waRows;
+    rows[i].referral=this.value;
+    codeWrap.style.display=this.value==='Referral'?'block':'none';
+    updateGenBtnState(type,i);
+    warn.style.display=(this.value==='Referral'&&!rows[i].refCode)?'block':'none';
   });
   wrap.appendChild(sel); wrap.appendChild(codeWrap);
   return wrap;
 }
-
+ 
 function saleCell(type, i, row){
   var wrap = document.createElement('div');
-  if(!activeSale || activeSale.status !== 'active'){
-    var msg = document.createElement('span'); msg.className = 'alock'; msg.textContent = 'No active sale';
+  if(!activeSale||activeSale.status!=='active'){
+    var msg=document.createElement('span'); msg.className='alock'; msg.textContent='No active sale';
     wrap.appendChild(msg); return wrap;
   }
-  // auto-detect product match
   var matched = getSaleCodeForSegment(row.segment);
   if(matched){
-    var flag = document.createElement('div'); flag.className = 'sale-flag';
-    flag.textContent = '\uD83C\uDFF7\uFE0F ' + matched.name;
-    wrap.appendChild(flag);
+    var flag=document.createElement('div'); flag.className='sale-flag';
+    flag.textContent='\uD83C\uDFF7\uFE0F '+matched.name; wrap.appendChild(flag);
   }
-  var toggleWrap = document.createElement('div'); toggleWrap.className = 'sale-toggle-wrap';
-  var chk = document.createElement('input'); chk.type = 'checkbox';
-  chk.checked = row.isSale;
-  chk.style.cursor = 'pointer';
-  chk.addEventListener('change', function(){
-    var rows = type==='pn' ? pnRows : waRows; rows[i].isSale = this.checked;
-  });
-  var lbl = document.createElement('label'); lbl.textContent = ' Include sale'; lbl.style.cursor='pointer';
-  toggleWrap.appendChild(chk); toggleWrap.appendChild(lbl);
-  wrap.appendChild(toggleWrap);
+  var toggleWrap=document.createElement('div'); toggleWrap.className='sale-toggle-wrap';
+  var chk=document.createElement('input'); chk.type='checkbox'; chk.checked=row.isSale; chk.style.cursor='pointer';
+  chk.addEventListener('change',function(){ var rows=type==='pn'?pnRows:waRows; rows[i].isSale=this.checked; });
+  var lbl=document.createElement('label'); lbl.textContent=' Include sale'; lbl.style.cursor='pointer';
+  toggleWrap.appendChild(chk); toggleWrap.appendChild(lbl); wrap.appendChild(toggleWrap);
   return wrap;
 }
-
+ 
 function makeOutCell(type, i, field, label, value){
-  var wrap = document.createElement('div'); wrap.className = 'out-wrap';
-  var lbl = document.createElement('div'); lbl.className = 'out-lbl';
-  lbl.innerHTML = label + '<span>\u270E editable</span>';
-  var ta = document.createElement('textarea');
-  ta.className = 'out-edit'; ta.rows = 2; ta.value = value || ''; ta.placeholder = 'Generate first...';
-  ta.addEventListener('change', function(){
-    var rows = type==='pn' ? pnRows : waRows; if(rows[i]) rows[i][field] = this.value;
+  var wrap=document.createElement('div'); wrap.className='out-wrap';
+  var lbl=document.createElement('div'); lbl.className='out-lbl';
+  lbl.innerHTML=label+'<span>\u270E editable</span>';
+  var ta=document.createElement('textarea');
+  ta.className='out-edit'; ta.rows=2; ta.value=value||''; ta.placeholder='Generate first…';
+  ta.addEventListener('change',function(){
+    var rows=type==='pn'?pnRows:waRows; if(rows[i]) rows[i][field]=this.value;
   });
   wrap.appendChild(lbl); wrap.appendChild(ta); return wrap;
 }
-
+ 
 function makeInputTd(rows, value, onChange){
-  var td = document.createElement('td');
-  var ta = document.createElement('textarea'); ta.className = 'ifield'; ta.rows = rows; ta.value = value || '';
-  ta.addEventListener('change', function(){ onChange(this.value); });
+  var td=document.createElement('td');
+  var ta=document.createElement('textarea'); ta.className='ifield'; ta.rows=rows; ta.value=value||'';
+  ta.addEventListener('change',function(){ onChange(this.value); });
   td.appendChild(ta); return td;
 }
-
+ 
 function makeStarWidget(type, i, row){
-  var wrap = document.createElement('div'); wrap.className = 'sw';
-  var isApproved = row.status === 'approved';
+  var wrap=document.createElement('div'); wrap.className='sw';
+  var isApproved=row.status==='approved';
   if(!isApproved){
-    var lock = document.createElement('span'); lock.className = 'alock'; lock.textContent = 'Approve first';
+    var lock=document.createElement('span'); lock.className='alock'; lock.textContent='Approve first';
     wrap.appendChild(lock); return wrap;
   }
-  var starsDiv = document.createElement('div'); starsDiv.className = 'stars';
-  var ratingLbl = document.createElement('span');
-
-  function getRows(){ return type==='pn' ? pnRows : waRows; }
-  function getSaved(){ return getRows()[i].rating || 0; }
-
+  var starsDiv=document.createElement('div'); starsDiv.className='stars';
+  var ratingLbl=document.createElement('span');
+  function getRows(){ return type==='pn'?pnRows:waRows; }
+  function getSaved(){ return getRows()[i].rating||0; }
   function paintStars(highlight){
-    // highlight = value being hovered (0 means show saved rating)
-    var show = highlight || getSaved();
-    var spans = starsDiv.querySelectorAll('.star');
-    for(var s=0;s<spans.length;s++){
-      spans[s].classList.toggle('active', s < show);
-    }
+    var show=highlight||getSaved();
+    var spans=starsDiv.querySelectorAll('.star');
+    for(var s=0;s<spans.length;s++) spans[s].classList.toggle('active',s<show);
   }
-
   function buildStars(){
-    starsDiv.innerHTML = '';
+    starsDiv.innerHTML='';
     for(var s=1;s<=5;s++){
-      var star = document.createElement('span');
-      star.className = 'star' + (isAdmin ? ' clickable' : '');
-      star.textContent = '\u2605';
+      var star=document.createElement('span');
+      star.className='star'+(isAdmin?' clickable':''); star.textContent='\u2605';
       if(isAdmin){
         (function(val){
-          star.addEventListener('mouseover', function(){ paintStars(val); });
-          star.addEventListener('mouseout',  function(){ paintStars(0); });
-          star.addEventListener('click',     function(e){
+          star.addEventListener('mouseover',function(){ paintStars(val); });
+          star.addEventListener('mouseout', function(){ paintStars(0); });
+          star.addEventListener('click',    function(e){
             e.stopPropagation();
-            var r = getRows()[i];
-            r.rating = val;
-            paintStars(0); // will read saved rating via getSaved()
-            ratingLbl.className = 'rlbl ' + (RATING_CLASSES[val] || 'rl-none');
-            ratingLbl.textContent = RATING_LABELS[val] || 'Not rated';
-            if(r.learnIdx >= 0) setRating(type, r.learnBank, r.learnIdx, val);
+            var r=getRows()[i]; r.rating=val;
+            paintStars(0);
+            ratingLbl.className='rlbl '+(RATING_CLASSES[val]||'rl-none');
+            ratingLbl.textContent=RATING_LABELS[val]||'Not rated';
+            if(r.learnIdx>=0) setRating(type,r.learnBank,r.learnIdx,val);
           });
         })(s);
       }
       starsDiv.appendChild(star);
     }
-    paintStars(0); // paint initial state from saved rating
+    paintStars(0);
   }
-  buildStars(); // build stars and paint from saved rating
-  var cur0 = getSaved();
-  ratingLbl.className = 'rlbl ' + (cur0 ? RATING_CLASSES[cur0] : 'rl-none');
-  ratingLbl.textContent = cur0 ? RATING_LABELS[cur0] : (isAdmin ? 'Not rated' : 'Admin only');
+  buildStars();
+  var cur0=getSaved();
+  ratingLbl.className='rlbl '+(cur0?RATING_CLASSES[cur0]:'rl-none');
+  ratingLbl.textContent=cur0?RATING_LABELS[cur0]:(isAdmin?'Not rated':'Admin only');
   wrap.appendChild(starsDiv); wrap.appendChild(ratingLbl); return wrap;
 }
-
-function updateRatingLabel(type, i, rating){
-  var lbl = document.getElementById('rl-'+type+'-'+i);
-  if(!lbl) return;
-  lbl.className = 'rlbl ' + (rating ? RATING_CLASSES[rating] : 'rl-none');
-  lbl.textContent = rating ? RATING_LABELS[rating] : 'Not rated';
-}
-
+ 
 function makeRow(type, row, i){
-  var tr = document.createElement('tr');
-  var td0 = document.createElement('td'); td0.textContent = i+1; tr.appendChild(td0);
-
+  var tr=document.createElement('tr');
+  var td0=document.createElement('td'); td0.textContent=i+1; tr.appendChild(td0);
+ 
   if(type==='pn'){
-    tr.appendChild(makeInputTd(3, row.segment, function(v){pnRows[i].segment=v;}));
-    tr.appendChild(makeInputTd(2, row.campaign, function(v){pnRows[i].campaign=v;}));
-    tr.appendChild(makeInputTd(3, row.performance, function(v){pnRows[i].performance=v;}));
+    tr.appendChild(makeInputTd(3,row.segment,   function(v){pnRows[i].segment=v;}));
+    tr.appendChild(makeInputTd(2,row.campaign,  function(v){pnRows[i].campaign=v;}));
+    tr.appendChild(makeInputTd(3,row.performance,function(v){pnRows[i].performance=v;}));
   } else {
-    tr.appendChild(makeInputTd(3, row.segment, function(v){waRows[i].segment=v;}));
-    tr.appendChild(makeInputTd(2, row.conversion, function(v){waRows[i].conversion=v;}));
-    tr.appendChild(makeInputTd(2, row.campaign, function(v){waRows[i].campaign=v;}));
+    tr.appendChild(makeInputTd(3,row.segment,   function(v){waRows[i].segment=v;}));
+    tr.appendChild(makeInputTd(2,row.conversion,function(v){waRows[i].conversion=v;}));
+    tr.appendChild(makeInputTd(2,row.campaign,  function(v){waRows[i].campaign=v;}));
   }
-
-  // Tone
-  var tdTone = document.createElement('td'); tdTone.className = 'tonec';
-  tdTone.appendChild(toneSelect(type, i, row.tone||'FOMO'));
-  tr.appendChild(tdTone);
-
-  // Referral
-  var tdRef = document.createElement('td'); tdRef.className = 'refc';
-  tdRef.appendChild(referralSelect(type, i, row));
-  tr.appendChild(tdRef);
-
-  // Sale
-  var tdSale = document.createElement('td'); tdSale.className = 'salec';
-  tdSale.appendChild(saleCell(type, i, row));
-  tr.appendChild(tdSale);
-
-  // Status
-  var tdSt = document.createElement('td'); tdSt.id = 'st-'+type+'-'+i; tdSt.innerHTML = pill(row.status);
+ 
+  var tdTone=document.createElement('td'); tdTone.className='tonec';
+  tdTone.appendChild(toneSelect(type,i,row.tone||'FOMO')); tr.appendChild(tdTone);
+ 
+  var tdRef=document.createElement('td'); tdRef.className='refc';
+  tdRef.appendChild(referralSelect(type,i,row)); tr.appendChild(tdRef);
+ 
+  var tdSale=document.createElement('td'); tdSale.className='salec';
+  tdSale.appendChild(saleCell(type,i,row)); tr.appendChild(tdSale);
+ 
+  var tdSt=document.createElement('td'); tdSt.id='st-'+type+'-'+i; tdSt.innerHTML=pill(row.status);
   tr.appendChild(tdSt);
-
-  // Outputs
+ 
   if(type==='pn'){
-    var tdHl = document.createElement('td'); tdHl.className = 'out'; tdHl.id = 'hl-'+i; tdHl.appendChild(makeOutCell('pn',i,'headline','Headline',row.headline)); tr.appendChild(tdHl);
-    var tdBd = document.createElement('td'); tdBd.className = 'out'; tdBd.id = 'bd-'+i; tdBd.appendChild(makeOutCell('pn',i,'body','Body',row.body)); tr.appendChild(tdBd);
-    var tdCt = document.createElement('td'); tdCt.className = 'out'; tdCt.id = 'ct-'+i; tdCt.appendChild(makeOutCell('pn',i,'cta','CTA',row.cta)); tr.appendChild(tdCt);
+    var tdHl=document.createElement('td'); tdHl.className='out'; tdHl.id='hl-'+i; tdHl.appendChild(makeOutCell('pn',i,'headline','Headline',row.headline)); tr.appendChild(tdHl);
+    var tdBd=document.createElement('td'); tdBd.className='out'; tdBd.id='bd-'+i; tdBd.appendChild(makeOutCell('pn',i,'body','Body',row.body)); tr.appendChild(tdBd);
+    var tdCt=document.createElement('td'); tdCt.className='out'; tdCt.id='ct-'+i; tdCt.appendChild(makeOutCell('pn',i,'cta','CTA',row.cta)); tr.appendChild(tdCt);
   } else {
-    var tdIc = document.createElement('td'); tdIc.className = 'out'; tdIc.id = 'ic-'+i; tdIc.appendChild(makeOutCell('wa',i,'imageCopy','Image Copy',row.imageCopy)); tr.appendChild(tdIc);
-    var tdMsg = document.createElement('td'); tdMsg.className = 'out'; tdMsg.id = 'msg-'+i; tdMsg.appendChild(makeOutCell('wa',i,'message','Message',row.message)); tr.appendChild(tdMsg);
+    var tdIc=document.createElement('td'); tdIc.className='out'; tdIc.id='ic-'+i; tdIc.appendChild(makeOutCell('wa',i,'imageCopy','Image Copy',row.imageCopy)); tr.appendChild(tdIc);
+    var tdMsg=document.createElement('td'); tdMsg.className='out'; tdMsg.id='msg-'+i; tdMsg.appendChild(makeOutCell('wa',i,'message','Message',row.message)); tr.appendChild(tdMsg);
   }
-
-  // Revision
-  var tdRev = document.createElement('td'); tdRev.className = 'revc';
-  var revTa = document.createElement('textarea'); revTa.className = 'rfield'; revTa.rows = 3;
-  revTa.placeholder = 'e.g. Make more urgent...'; revTa.value = row.notes || '';
-  revTa.addEventListener('change', function(){ var rows=type==='pn'?pnRows:waRows; rows[i].notes=this.value; });
+ 
+  var tdRev=document.createElement('td'); tdRev.className='revc';
+  var revTa=document.createElement('textarea'); revTa.className='rfield'; revTa.rows=3;
+  revTa.placeholder='e.g. Make more urgent…'; revTa.value=row.notes||'';
+  revTa.addEventListener('change',function(){ var rows=type==='pn'?pnRows:waRows; rows[i].notes=this.value; });
   tdRev.appendChild(revTa); tr.appendChild(tdRev);
-
-  // Performance
-  var tdPerf = document.createElement('td'); tdPerf.className = 'perfc';
-  tdPerf.id = 'perf-' + type + '-' + i;
-  tdPerf.appendChild(makeStarWidget(type, i, row));
-  tr.appendChild(tdPerf);
-
-  // Actions
-  var tdAct = document.createElement('td');
-  var actDiv = document.createElement('div'); actDiv.className = 'acol';
-  var btnGen = document.createElement('button'); btnGen.className = 'btn btn-red btn-sm'; btnGen.textContent = 'Gen';
-  btnGen.onclick = (function(t,idx){return function(){generateRow(t,idx);};})(type,i);
-  var btnApp = document.createElement('button'); btnApp.className = 'btn btn-green btn-sm'; btnApp.textContent = 'Approve';
-  btnApp.onclick = (function(t,idx){return function(){approveRow(t,idx);};})(type,i);
+ 
+  var tdPerf=document.createElement('td'); tdPerf.className='perfc'; tdPerf.id='perf-'+type+'-'+i;
+  tdPerf.appendChild(makeStarWidget(type,i,row)); tr.appendChild(tdPerf);
+ 
+  var tdAct=document.createElement('td');
+  var actDiv=document.createElement('div'); actDiv.className='acol';
+ 
+  var btnGen=document.createElement('button');
+  btnGen.id='gen-'+type+'-'+i;
+  btnGen.className='btn btn-red btn-sm'; btnGen.textContent='Generate';
+  // FIX 4: set initial disabled state
+  var initiallyBlocked = row.referral==='Referral' && !(row.refCode||'').trim();
+  btnGen.disabled=initiallyBlocked;
+  if(initiallyBlocked) btnGen.title='\u26A0\uFE0F Enter referral code to enable';
+  btnGen.onclick=(function(t,idx){return function(){generateRow(t,idx);};})(type,i);
+ 
+  var btnApp=document.createElement('button'); btnApp.className='btn btn-green btn-sm'; btnApp.textContent='Approve';
+  btnApp.onclick=(function(t,idx){return function(){approveRow(t,idx);};})(type,i);
+ 
   actDiv.appendChild(btnGen); actDiv.appendChild(btnApp); tdAct.appendChild(actDiv); tr.appendChild(tdAct);
   return tr;
 }
-
+ 
+// FIX 1: Improved refreshOutCell — proper DOM removal
 function refreshOutCell(cellId, type, i, field, label, value){
-  var td = document.getElementById(cellId); td.innerHTML = '';
-  td.appendChild(makeOutCell(type, i, field, label, value));
+  var td=document.getElementById(cellId);
+  if(!td) return;
+  while(td.firstChild) td.removeChild(td.firstChild);
+  td.appendChild(makeOutCell(type,i,field,label,value));
 }
-
+ 
 // ── GENERATE ─────────────────────────────────────────────────
 async function generateRow(type, i){
-  if(!apiKey){ toast('Please enter and save your Groq API key first.', true); return; }
-  var rows = type==='pn' ? pnRows : waRows;
-  var row = rows[i];
-  // validate referral code
-  if(row.referral === 'Referral' && !row.refCode.trim()){
-    toast('Row '+(i+1)+': Referral code is required before generating.', true); return;
+  if(!apiKey){ toast('Please enter and save your Anthropic API key first.',true); return; }
+  var rows=type==='pn'?pnRows:waRows;
+  var row=rows[i];
+  if(row.referral==='Referral'&&!row.refCode.trim()){
+    toast('Row '+(i+1)+': Referral code is required before generating.',true); return;
   }
-  row.status = 'running';
-  document.getElementById('st-'+type+'-'+i).innerHTML = pill('running');
+ 
+  // FIX 1: Clear outputs immediately before API call
+  row.status='running';
+  document.getElementById('st-'+type+'-'+i).innerHTML=pill('running');
+  if(type==='pn'){
+    refreshOutCell('hl-'+i,'pn',i,'headline','Headline','');
+    refreshOutCell('bd-'+i,'pn',i,'body','Body','');
+    refreshOutCell('ct-'+i,'pn',i,'cta','CTA','');
+  } else {
+    refreshOutCell('ic-'+i,'wa',i,'imageCopy','Image Copy','');
+    refreshOutCell('msg-'+i,'wa',i,'message','Message','');
+  }
+ 
   try{
-    var content = type==='pn' ? await callPn(row) : await callWa(row);
+    var content=type==='pn' ? await callPn(row) : await callWa(row);
     if(type==='pn'){
       row.headline=content.headline||''; row.body=content.body||''; row.cta=content.cta||'';
       refreshOutCell('hl-'+i,'pn',i,'headline','Headline',row.headline);
@@ -1064,198 +1406,177 @@ async function generateRow(type, i){
       refreshOutCell('ic-'+i,'wa',i,'imageCopy','Image Copy',row.imageCopy);
       refreshOutCell('msg-'+i,'wa',i,'message','Message',row.message);
     }
-    row.status = 'done';
-    document.getElementById('st-'+type+'-'+i).innerHTML = pill('done');
+    row.status='done';
+    document.getElementById('st-'+type+'-'+i).innerHTML=pill('done');
   } catch(err){
-    row.status = 'error';
-    document.getElementById('st-'+type+'-'+i).innerHTML = pill('error');
-    var msg = err.message || 'Unknown error';
-    // Groq rate limit is the most common cause
-    if(msg.indexOf('429') >= 0 || msg.toLowerCase().indexOf('rate') >= 0){
-      msg = 'Rate limit hit — Groq free tier has limits. Rows will retry with delay on next Generate All.';
-    }
-    toast('Row '+(i+1)+' failed: '+msg, true);
+    row.status='error';
+    document.getElementById('st-'+type+'-'+i).innerHTML=pill('error');
+    var msg=err.message||'Unknown error';
+    if(msg.indexOf('529')>=0||msg.indexOf('overloaded')>=0) msg='Claude is overloaded — wait a moment then retry.';
+    else if(msg.indexOf('401')>=0) msg='Invalid API key. Check your Anthropic key.';
+    else if(msg.indexOf('429')>=0||msg.toLowerCase().indexOf('rate')>=0) msg='Rate limit hit — wait a few seconds then retry.';
+    toast('Row '+(i+1)+' failed: '+msg,true);
   }
 }
-
+ 
 async function retryFailed(type){
-  var rows = type==='pn' ? pnRows : waRows;
-  var failed = rows.filter(function(r){ return r.status==='error'; });
-  if(failed.length===0){ toast('No failed rows to retry.'); return; }
-  toast('Retrying ' + failed.length + ' failed rows...');
+  var rows=type==='pn'?pnRows:waRows;
+  var failed=rows.filter(function(r){return r.status==='error';});
+  if(!failed.length){ toast('No failed rows to retry.'); return; }
+  toast('Retrying '+failed.length+' failed rows…');
   for(var i=0;i<rows.length;i++){
     if(rows[i].status==='error'){
-      await generateRow(type, i);
-      if(i < rows.length-1) await new Promise(function(r){ setTimeout(r, 3000); });
+      await generateRow(type,i);
+      if(i<rows.length-1) await new Promise(function(r){setTimeout(r,2000);});
     }
   }
   toast('Retry complete');
 }
-
+ 
 async function generateAll(type){
-  if(!apiKey){ toast('Please enter and save your Groq API key first.', true); return; }
-  var rows = type==='pn' ? pnRows : waRows;
-  var btn = document.getElementById('genAll'+(type==='pn'?'Pn':'Wa'));
-  btn.disabled = true;
-  document.getElementById('progWrap').style.display = 'block';
-  var done=0, failed=0;
+  if(!apiKey){ toast('Please enter and save your Anthropic API key first.',true); return; }
+  var rows=type==='pn'?pnRows:waRows;
+  var btn=document.getElementById('genAll'+(type==='pn'?'Pn':'Wa'));
+  btn.disabled=true;
+  document.getElementById('progWrap').style.display='block';
+  var done=0,failed=0;
   for(var i=0;i<rows.length;i++){
-    document.getElementById('progBar').style.width = Math.round(((i+1)/rows.length)*100) + '%';
-    // Auto-retry up to 3 times with exponential backoff on rate limit errors
-    var attempts = 0;
-    var success = false;
-    while(attempts < 3 && !success){
-      await generateRow(type, i);
-      if(rows[i].status === 'done'){
-        success = true;
-        done++;
-      } else if(rows[i].status === 'error'){
+    document.getElementById('progBar').style.width=Math.round(((i+1)/rows.length)*100)+'%';
+    var attempts=0,success=false;
+    while(attempts<3&&!success){
+      await generateRow(type,i);
+      if(rows[i].status==='done'){ success=true; done++; }
+      else if(rows[i].status==='error'){
         attempts++;
-        if(attempts < 3){
-          var waitSec = attempts * 8; // 8s, 16s backoff
-          toast('Rate limit hit on row '+(i+1)+' — waiting '+waitSec+'s before retry '+attempts+'/2...', true);
-          await new Promise(function(r){ setTimeout(r, waitSec * 1000); });
-          rows[i].status = 'pending'; // reset so generateRow runs again
-          document.getElementById('st-'+type+'-'+i).innerHTML = pill('pending');
-        } else {
-          failed++;
-        }
-      } else {
-        // skipped (e.g. missing referral code) — move on
-        break;
-      }
+        if(attempts<3){
+          var waitSec=attempts*10;
+          toast('Row '+(i+1)+' failed — retrying in '+waitSec+'s (attempt '+attempts+'/2)…',true);
+          await new Promise(function(r){setTimeout(r,waitSec*1000);});
+          rows[i].status='pending';
+          document.getElementById('st-'+type+'-'+i).innerHTML=pill('pending');
+        } else { failed++; }
+      } else { break; }
     }
-    // 3 second gap between every row — well within Groq's 30 req/min limit
-    if(i < rows.length-1) await new Promise(function(r){ setTimeout(r, 3000); });
+    if(i<rows.length-1) await new Promise(function(r){setTimeout(r,1500);});
   }
-  document.getElementById('progWrap').style.display = 'none';
-  btn.disabled = false;
-  var msg = done + ' of ' + rows.length + ' rows generated';
-  if(failed > 0) msg += ' — ' + failed + ' still failed (use Retry Failed button)';
-  toast(msg, failed > 0);
+  document.getElementById('progWrap').style.display='none';
+  btn.disabled=false;
+  var msg=done+' of '+rows.length+' rows generated';
+  if(failed>0) msg+=' — '+failed+' still failed (use Retry Failed)';
+  toast(msg,failed>0);
 }
-
+ 
 // ── PROMPTS ───────────────────────────────────────────────────
-function buildContext(row, type){
-  var bankKey = row.isSale ? 'sale' : row.referral==='Referral' ? 'referral' : 'general';
-  var learnCtx = getLearnContext(bankKey, type);
-  var toneInstruction = TONE_INSTRUCTIONS[row.tone] || '';
-
-  var referralCtx = '';
-  if(row.referral === 'Referral'){
-    referralCtx = '\nREFERRAL CONTEXT: This is a referral campaign. The user has a referral code: ' + row.refCode +
-      '. Naturally include this code in the copy and make it feel like a benefit being shared with a friend.';
-  }
-
-  var saleCtx = '';
-  if(row.isSale && activeSale && activeSale.status==='active'){
-    var matched = getSaleCodeForSegment(row.segment);
-    saleCtx = '\nSALE CONTEXT: There is an active sale called "' + activeSale.name + '". ' + activeSale.desc + '.';
-    if(matched){
-      saleCtx += ' The discount code for ' + matched.name + ' is: ' + matched.code + '. Include this code naturally in the copy.';
-    }
-    saleCtx += ' Valid till ' + activeSale.endDate + '.';
-  }
-
-  return {bankKey:bankKey, learnCtx:learnCtx, toneInstruction:toneInstruction, referralCtx:referralCtx, saleCtx:saleCtx};
-}
-
 async function callPn(row){
-  var ctx = buildContext(row, 'pn');
-  var hasGood = learnBank[ctx.bankKey].pn.some(function(x){return x.tier==='good';});
-  var hasPoor = learnBank[ctx.bankKey].pn.some(function(x){return x.tier==='poor';});
-  var learnNote = '';
-  if(hasGood) learnNote += ' Prioritise matching the HIGH PERFORMING examples.';
-  if(hasPoor) learnNote += ' Strictly avoid POOR PERFORMING patterns.';
-  var prompt = 'You are a push notification copywriter for Teji Mandi.\n\n' + BRAND +
-    '\n\nStudy these approved examples and match their tone:\n' + PN_BASE + ctx.learnCtx +
-    '\n\nTONE INSTRUCTION: ' + ctx.toneInstruction +
-    ctx.referralCtx + ctx.saleCtx +
-    '\n\nGenerate a push notification. Return ONLY valid JSON: {"headline":"...","body":"...","cta":"..."}\n\nRules:\n' +
-    '- headline: max 55 chars. Apply the tone instruction strongly. 1-2 emojis ok.\n' +
-    '- body: max 110 chars. Reinforce the tone. ONLY use data from inputs.\n' +
-    '- cta: max 25 chars. Action verb + product direction.\n' +
-    '- If referral or sale, include the code naturally.\n' +
-    '- No markdown outside the JSON.' + learnNote +
-    '\n\nInputs:\nSegment: ' + row.segment +
-    '\nCampaign Type: ' + row.campaign +
-    '\nPerformance: ' + (row.performance||'Not provided') +
-    '\nTone: ' + row.tone +
-    (row.notes ? '\nRevision note: ' + row.notes : '');
+  var ctx=buildContext(row,'pn');
+  var hasGood=learnBank[ctx.bankKey].pn.some(function(x){return x.tier==='good';});
+  var hasPoor=learnBank[ctx.bankKey].pn.some(function(x){return x.tier==='poor';});
+  var learnNote='';
+  if(hasGood) learnNote+=' Prioritise matching HIGH PERFORMING examples.';
+  if(hasPoor) learnNote+=' Strictly avoid POOR PERFORMING patterns.';
+ 
+  var prompt='You are a push notification copywriter for Teji Mandi.\n\n'+BRAND+
+    ctx.productCtx+
+    '\n\nStudy these approved examples and match their tone:\n'+PN_BASE+ctx.learnCtx+ctx.competitorCtx+
+    '\n\nTONE INSTRUCTION: '+ctx.toneInstruction+
+    ctx.referralCtx+ctx.saleCtx+
+    '\n\nGenerate a push notification. Return ONLY a valid JSON object: {"headline":"...","body":"...","cta":"..."}\n\nRules:\n'+
+    '- headline: max 55 chars. Apply tone strongly. 1-2 emojis ok.\n'+
+    '- body: max 110 chars. Reinforce tone. Use only data from inputs and product profile.\n'+
+    '- cta: max 25 chars. Action verb + product direction.\n'+
+    '- If referral or sale context is given, include the code naturally.\n'+
+    '- No markdown, no explanation, just the JSON object.'+learnNote+
+    '\n\nInputs:\nSegment: '+row.segment+
+    '\nCampaign Type: '+row.campaign+
+    '\nPerformance: '+(row.performance||'Not provided')+
+    '\nTone: '+row.tone+
+    (row.notes?'\nRevision note: '+row.notes:'');
   return await callAPI(prompt);
 }
-
+ 
 async function callWa(row){
-  var ctx = buildContext(row, 'wa');
-  var hasGood = learnBank[ctx.bankKey].wa.some(function(x){return x.tier==='good';});
-  var hasPoor = learnBank[ctx.bankKey].wa.some(function(x){return x.tier==='poor';});
-  var learnNote = '';
-  if(hasGood) learnNote += ' Prioritise matching HIGH PERFORMING examples.';
-  if(hasPoor) learnNote += ' Strictly avoid POOR PERFORMING patterns.';
-  var prompt = 'You are a WhatsApp copywriter for Teji Mandi.\n\n' + BRAND +
-    '\n\nStyle guide:\n' + WA_STYLE + ctx.learnCtx +
-    '\n\nTONE INSTRUCTION: ' + ctx.toneInstruction +
-    ctx.referralCtx + ctx.saleCtx +
-    '\n\nGenerate WhatsApp content. Return ONLY valid JSON: {"image_copy":"...","message":"..."}\n\nRules:\n' +
-    '- image_copy: max 60 chars. Bold, punchy overlay text. Apply the tone.\n' +
-    '- message: 160-230 chars. Hook then main point then CTA. Use newlines. Reflect the tone throughout.\n' +
-    '- If referral or sale, include the code naturally.\n' +
-    '- ONLY use data from inputs. No markdown outside the JSON.' + learnNote +
-    '\n\nInputs:\nSegment: ' + row.segment +
-    '\nConversion Event: ' + row.conversion +
-    '\nCampaign Type: ' + row.campaign +
-    '\nTone: ' + row.tone +
-    (row.notes ? '\nRevision note: ' + row.notes : '');
+  var ctx=buildContext(row,'wa');
+  var hasGood=learnBank[ctx.bankKey].wa.some(function(x){return x.tier==='good';});
+  var hasPoor=learnBank[ctx.bankKey].wa.some(function(x){return x.tier==='poor';});
+  var learnNote='';
+  if(hasGood) learnNote+=' Prioritise matching HIGH PERFORMING examples.';
+  if(hasPoor) learnNote+=' Strictly avoid POOR PERFORMING patterns.';
+ 
+  var prompt='You are a WhatsApp copywriter for Teji Mandi.\n\n'+BRAND+
+    ctx.productCtx+
+    '\n\nStyle guide:\n'+WA_STYLE+ctx.learnCtx+ctx.competitorCtx+
+    '\n\nTONE INSTRUCTION: '+ctx.toneInstruction+
+    ctx.referralCtx+ctx.saleCtx+
+    '\n\nGenerate WhatsApp content. Return ONLY a valid JSON object: {"image_copy":"...","message":"..."}\n\nRules:\n'+
+    '- image_copy: max 60 chars. Bold, punchy overlay text. Apply the tone.\n'+
+    '- message: 160-230 chars. Hook then main point then CTA. Use newlines. Reflect tone throughout.\n'+
+    '- If referral or sale context, include the code naturally.\n'+
+    '- Use only data from inputs and product profile. No markdown, just the JSON.'+learnNote+
+    '\n\nInputs:\nSegment: '+row.segment+
+    '\nConversion Event: '+row.conversion+
+    '\nCampaign Type: '+row.campaign+
+    '\nTone: '+row.tone+
+    (row.notes?'\nRevision note: '+row.notes:'');
   return await callAPI(prompt);
 }
-
+ 
+// FIX 6: Anthropic Claude API (replaces Groq)
 async function callAPI(prompt){
-  var res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  var res=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
     body:JSON.stringify({
-      model:'llama-3.3-70b-versatile', max_tokens:600, temperature:0.75,
-      response_format:{type:'json_object'},
-      messages:[
-        {role:'system', content:'You are a copywriter for Teji Mandi, an Indian investment research platform. Always respond with a single valid JSON object only. No preamble, no markdown, no explanation.'},
-        {role:'user', content:prompt}
-      ]
+      model:'claude-sonnet-4-6',
+      max_tokens:600,
+      temperature:0.75,
+      system:'You are a copywriter for Teji Mandi, an Indian investment research platform. Always respond with a single valid JSON object only. No preamble, no markdown, no explanation outside the JSON.',
+      messages:[{role:'user',content:prompt}]
     })
   });
-  if(!res.ok){ var err=await res.json().catch(function(){return{};}); throw new Error((err.error&&err.error.message)||'API error '+res.status); }
-  var data = await res.json();
-  var text = data.choices[0].message.content.replace(/```json|```/g,'').trim();
+  if(!res.ok){
+    var err=await res.json().catch(function(){return{};});
+    throw new Error((err.error&&err.error.message)||'API error '+res.status);
+  }
+  var data=await res.json();
+  var text=data.content[0].text.replace(/```json|```/g,'').trim();
   return JSON.parse(text);
 }
-
+ 
 // ── EXPORT ────────────────────────────────────────────────────
 function exportExcel(){
-  var wb = XLSX.utils.book_new();
-  var pnData = [['Segment','Campaign Type','Performance','Tone','Referral','Ref Code','Sale Included','Status','Headline','Body Copy','CTA','Revision Note','Real Performance (stars)']];
+  var wb=XLSX.utils.book_new();
+  var pnData=[['Segment','Campaign Type','Performance','Tone','Referral','Ref Code','Sale Included','Status','Headline','Body Copy','CTA','Revision Note','Real Performance (stars)']];
   pnRows.forEach(function(r){ pnData.push([r.segment,r.campaign,r.performance,r.tone||'',r.referral||'',r.refCode||'',r.isSale?'Yes':'No',r.status,r.headline,r.body,r.cta,r.notes,r.rating||'']); });
-  var waData = [['Segment','Conversion Event','Campaign Type','Tone','Referral','Ref Code','Sale Included','Status','Image Copy','Message Body','Revision Note','Real Performance (stars)']];
+  var waData=[['Segment','Conversion Event','Campaign Type','Tone','Referral','Ref Code','Sale Included','Status','Image Copy','Message Body','Revision Note','Real Performance (stars)']];
   waRows.forEach(function(r){ waData.push([r.segment,r.conversion,r.campaign,r.tone||'',r.referral||'',r.refCode||'',r.isSale?'Yes':'No',r.status,r.imageCopy,r.message,r.notes,r.rating||'']); });
-  var wsPn = XLSX.utils.aoa_to_sheet(pnData);
-  var wsWa = XLSX.utils.aoa_to_sheet(waData);
-  wsPn['!cols'] = [24,18,30,16,14,14,10,10,22,42,16,22,12].map(function(w){return{wch:w};});
-  wsWa['!cols'] = [24,18,18,16,14,14,10,10,22,48,22,12].map(function(w){return{wch:w};});
-  XLSX.utils.book_append_sheet(wb, wsPn, 'Push Notifications');
-  XLSX.utils.book_append_sheet(wb, wsWa, 'WhatsApp');
-  XLSX.writeFile(wb, 'TejiMandi_Generated_Content.xlsx');
+  var wsPn=XLSX.utils.aoa_to_sheet(pnData);
+  var wsWa=XLSX.utils.aoa_to_sheet(waData);
+  wsPn['!cols']=[24,18,30,16,14,14,10,10,22,42,16,22,12].map(function(w){return{wch:w};});
+  wsWa['!cols']=[24,18,18,16,14,14,10,10,22,48,22,12].map(function(w){return{wch:w};});
+  XLSX.utils.book_append_sheet(wb,wsPn,'Push Notifications');
+  XLSX.utils.book_append_sheet(wb,wsWa,'WhatsApp');
+  XLSX.writeFile(wb,'TejiMandi_Generated_Content.xlsx');
   toast('Excel exported');
 }
-
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function toast(msg, isError){
-  var el = document.getElementById('toast');
-  el.textContent = msg; el.style.background = isError ? '#C0392B' : '#1A1A2E';
-  el.classList.add('show'); setTimeout(function(){el.classList.remove('show');}, 4000);
+ 
+function toast(msg,isError){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.style.background=isError?'#C0392B':'#1A1A2E';
+  el.classList.add('show'); setTimeout(function(){el.classList.remove('show');},4000);
 }
-
+ 
 // ── INIT ─────────────────────────────────────────────────────
+if(location.protocol==='file:'){
+  document.getElementById('corsBanner').style.display='flex';
+}
 updateSaleUI();
-renderTable('pn'); renderTable('wa');
+renderTable('pn');
+renderTable('wa');
 </script>
 </body>
 </html>
