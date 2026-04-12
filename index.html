@@ -238,10 +238,10 @@ td.tonec{background:#fdf0ff} td.refc{background:#f0f8ff} td.salec{background:#ff
   <div class="banner banner-key">
     <div class="banner-icon">&#128273;</div>
     <div style="flex:1">
-      <h3>Anthropic API Key &mdash; Claude Sonnet powers content generation</h3>
-      <p>Get your key at <a href="https://console.anthropic.com/keys" target="_blank"><strong>console.anthropic.com/keys</strong></a> &rarr; Create API Key &rarr; paste below. Keys start with <code>sk-ant-</code></p>
+      <h3>Groq API Key &mdash; free, no credit card needed</h3>
+      <p>Get your key at <a href="https://console.groq.com/keys" target="_blank"><strong>console.groq.com/keys</strong></a> &rarr; Sign up free &rarr; Create API Key &rarr; paste below. Keys start with <code>gsk_</code></p>
       <div class="row">
-        <input class="fi" type="password" id="apiKeyInput" placeholder="sk-ant-..."/>
+        <input class="fi" type="password" id="apiKeyInput" placeholder="gsk_..."/>
         <button class="btn btn-gold btn-sm" onclick="saveKey()">Save Key</button>
         <span class="api-saved" id="apiSaved">&#10003; Saved</span>
       </div>
@@ -465,9 +465,9 @@ function closeModal(id){
 // ── API KEY ───────────────────────────────────────────────────
 function saveKey(){
   apiKey = document.getElementById('apiKeyInput').value.trim();
-  if(apiKey.indexOf('sk-ant-') !== 0){ toast('Please enter a valid Anthropic key (starts with sk-ant-)', true); return; }
+  if(apiKey.indexOf('gsk_') !== 0){ toast('Please enter a valid Groq key (starts with gsk_)', true); return; }
   document.getElementById('apiSaved').style.display = 'inline';
-  toast('Anthropic API key saved');
+  toast('Groq API key saved');
 }
  
 // ── TAB ───────────────────────────────────────────────────────
@@ -1520,22 +1520,20 @@ async function callWa(row){
   return await callAPI(prompt);
 }
  
-// FIX 6: Anthropic Claude API (replaces Groq)
+// Groq API — free, llama-3.3-70b
 async function callAPI(prompt){
-  var res=await fetch('https://api.anthropic.com/v1/messages',{
+  var res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':apiKey,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
     body:JSON.stringify({
-      model:'claude-sonnet-4-6',
+      model:'llama-3.3-70b-versatile',
       max_tokens:600,
       temperature:0.75,
-      system:'You are a copywriter for Teji Mandi, an Indian investment research platform. Always respond with a single valid JSON object only. No preamble, no markdown, no explanation outside the JSON.',
-      messages:[{role:'user',content:prompt}]
+      response_format:{type:'json_object'},
+      messages:[
+        {role:'system',content:'You are a copywriter for Teji Mandi, an Indian investment research platform. Always respond with a single valid JSON object only. No preamble, no markdown, no explanation outside the JSON.'},
+        {role:'user',content:prompt}
+      ]
     })
   });
   if(!res.ok){
@@ -1543,7 +1541,7 @@ async function callAPI(prompt){
     throw new Error((err.error&&err.error.message)||'API error '+res.status);
   }
   var data=await res.json();
-  var text=data.content[0].text.replace(/```json|```/g,'').trim();
+  var text=data.choices[0].message.content.replace(/```json|```/g,'').trim();
   return JSON.parse(text);
 }
  
@@ -1580,3 +1578,4 @@ renderTable('wa');
 </script>
 </body>
 </html>
+ 
